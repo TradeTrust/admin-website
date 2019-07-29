@@ -9,25 +9,36 @@ import getAccounts from "../services/web3/getAccounts";
 import DocumentStoreDefinition from "../services/contracts/DocumentStore.json";
 
 import { getSelectedWeb3 } from "./application";
+import { getLogger } from "../logger";
+
+const { error } = getLogger("admin.js:");
 
 export function* loadAdminAddress() {
   try {
+    yield put({
+      type: applicationTypes.IS_LOADING
+    });
     const web3 = yield getSelectedWeb3();
     const accounts = yield getAccounts(web3);
 
     if (!accounts || !accounts.length || accounts.length === 0)
       throw new Error("Accounts not found");
-
     yield put({
       type: types.LOADING_ADMIN_ADDRESS_SUCCESS,
       payload: accounts[0]
+    });
+    yield put({
+      type: applicationTypes.IS_NOT_LOADING
     });
   } catch (e) {
     yield put({
       type: types.LOADING_ADMIN_ADDRESS_FAILURE,
       payload: e.message
     });
-    console.error(e);
+    yield put({
+      type: applicationTypes.IS_NOT_LOADING
+    });
+    error("loadAdminAddress:", e);
   }
 }
 
@@ -97,7 +108,7 @@ export function* deployStore({ payload }) {
       type: types.DEPLOYING_STORE_FAILURE,
       payload: e.message
     });
-    throw e;
+    error("deployStore:", e);
   }
 }
 
@@ -143,7 +154,7 @@ export function* issueCertificate({ payload }) {
       type: types.ISSUING_CERTIFICATE_FAILURE,
       payload: e.message
     });
-    console.error(e);
+    error("issueCertificate:", e);
   }
 }
 
@@ -187,7 +198,7 @@ export function* revokeCertificate({ payload }) {
       type: types.REVOKING_CERTIFICATE_FAILURE,
       payload: e.message
     });
-    console.error(e);
+    error("revokeCertificate:", e);
   }
 }
 
