@@ -1,5 +1,5 @@
 {
-  "name": "opencerts-admin-ui",
+  "name": "tradetrust-admin-ui",
   "version": "0.0.1",
   "scripts": {
     "dev": "next",
@@ -10,10 +10,7 @@
     "build": "next build",
     "build:static": "next build && next export",
     "start": "next build && next start",
-    "cname": "echo 'admin.opencerts.io' > out/CNAME",
     "deploy": "rm -rf out && npm run build:static",
-    "deploy:legacy": "npm run deploy:prebuilt && gh-pages --dotfiles --dist out",
-    "deploy:prebuilt": "rm -rf out && npm run build:static && touch out/.nojekyll && npm run cname",
     "serve-static": "http-server out -s -p 3000",
     "integration": "testcafe chrome src/**/*.spec.js",
     "integration:headless": "npm run build:static && testcafe chrome:headless src/**/*.spec.js --app \"npm run serve-static\"",

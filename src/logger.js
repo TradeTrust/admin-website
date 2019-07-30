@@ -1,4 +1,4 @@
-const debug = require("debug")("opencerts:admin-website");
+const debug = require("debug")("tradetrust:admin-website");
 
 export const trace = namespace => debug.extend(`trace:${namespace}`);
 export const info = namespace => debug.extend(`info:${namespace}`);
