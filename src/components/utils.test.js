@@ -54,8 +54,8 @@ describe("isValidDocumentHash validator", () => {
 
   it("should return false for non-addresses", () => {
     expect(isValidDocumentHash("00")).toBe(false);
-    expect(
-      isValidDocumentHash("eaf9503a6555f6cfbf2feb83a6c51a38b641ff")
-    ).toBe(false);
+    expect(isValidDocumentHash("eaf9503a6555f6cfbf2feb83a6c51a38b641ff")).toBe(
+      false
+    );
   });
 });

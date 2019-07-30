@@ -9,5 +9,4 @@ export const isValidAddress = address => {
   }
 };
 
-export const isValidDocumentHash = input =>
-  /^0x[a-fA-F0-9]{64}$/.test(input);
+export const isValidDocumentHash = input => /^0x[a-fA-F0-9]{64}$/.test(input);
