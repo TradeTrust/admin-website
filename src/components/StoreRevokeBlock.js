@@ -3,14 +3,14 @@ import PropTypes from "prop-types";
 import HashColor from "./UI/HashColor";
 import HashColorInput from "./UI/HashColorInput";
 import { OrangeButton } from "./UI/Button";
-import { isValidCertificateHash } from "../components/utils";
+import { isValidDocumentHash } from "../components/utils";
 
 class StoreRevokeBlock extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      certificateHash: "",
-      certificateHashIsValid: true
+      documentHash: "",
+      documentHashIsValid: true
     };
 
     this.onHashChange = this.onHashChange.bind(this);
@@ -19,50 +19,50 @@ class StoreRevokeBlock extends Component {
 
   onHashChange(event) {
     this.setState({
-      certificateHash: event.target.value,
-      certificateHashIsValid: isValidCertificateHash(event.target.value)
+      documentHash: event.target.value,
+      documentHashIsValid: isValidDocumentHash(event.target.value)
     });
   }
 
   onRevokeClick() {
-    const { adminAddress, storeAddress, handleCertificateRevoke } = this.props;
-    const { certificateHash } = this.state;
+    const { adminAddress, storeAddress, handleDocumentRevoke } = this.props;
+    const { documentHash } = this.state;
 
     this.setState({
-      certificateHashIsValid: isValidCertificateHash(certificateHash)
+      documentHashIsValid: isValidDocumentHash(documentHash)
     });
-    if (isValidCertificateHash(certificateHash)) {
+    if (isValidDocumentHash(documentHash)) {
       // eslint-disable-next-line no-alert
       const yes = window.confirm("Are you sure you want to revoke this hash?");
       if (yes) {
-        handleCertificateRevoke({
+        handleDocumentRevoke({
           storeAddress,
           fromAddress: adminAddress,
-          certificateHash
+          documentHash
         });
       }
     }
   }
 
   render() {
-    const { certificateHash, certificateHashIsValid } = this.state;
+    const { documentHash, documentHashIsValid } = this.state;
     const { revokedTx, networkId } = this.props;
-    const certificateHashMessage = certificateHashIsValid
+    const documentHashMessage = documentHashIsValid
       ? ""
       : "Merkle root/target hash is not valid.";
 
     return (
       <div>
         <div>
-          Certificate hash to revoke
+          Document hash to revoke
           <HashColorInput
             className="mt2"
             variant="pill"
             type="hash"
-            hashee={certificateHash}
+            hashee={documentHash}
             onChange={this.onHashChange}
-            value={certificateHash}
-            message={certificateHashMessage}
+            value={documentHash}
+            message={documentHashMessage}
             placeholder="0x…"
           />
         </div>
@@ -73,12 +73,12 @@ class StoreRevokeBlock extends Component {
         >
           <i className="fas fa-exclamation-triangle" />
           &nbsp;
-          {this.props.revokingCertificate ? "Revoking…" : "Revoke"}
+          {this.props.revokingDocument ? "Revoking…" : "Revoke"}
         </OrangeButton>
 
         {revokedTx ? (
           <div className="mt5">
-            <p>Revoked certificate batch.</p>
+            <p>Revoked document batch.</p>
             <div>
               Transaction ID
               <HashColor hashee={revokedTx} networkId={networkId} isTx />
@@ -93,10 +93,10 @@ class StoreRevokeBlock extends Component {
 export default StoreRevokeBlock;
 
 StoreRevokeBlock.propTypes = {
-  revokingCertificate: PropTypes.bool,
+  revokingDocument: PropTypes.bool,
   revokedTx: PropTypes.string,
   storeAddress: PropTypes.string,
   adminAddress: PropTypes.string,
-  handleCertificateRevoke: PropTypes.func,
+  handleDocumentRevoke: PropTypes.func,
   networkId: PropTypes.number
 };

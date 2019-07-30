@@ -31,8 +31,8 @@ export default function* rootSaga() {
       applicationSaga.addTxHashToPolling
     ),
     takeEvery(adminType.DEPLOYING_STORE, adminSaga.deployStore),
-    takeEvery(adminType.ISSUING_CERTIFICATE, adminSaga.issueCertificate),
-    takeEvery(adminType.REVOKING_CERTIFICATE, adminSaga.revokeCertificate),
+    takeEvery(adminType.ISSUING_CERTIFICATE, adminSaga.issueDocument),
+    takeEvery(adminType.REVOKING_CERTIFICATE, adminSaga.revokeDocument),
     takeEvery(applicationType.UPDATE_WEB3, adminSaga.networkReset),
     takeEvery(
       applicationType.NEW_BLOCK,

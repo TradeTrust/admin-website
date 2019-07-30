@@ -1,4 +1,4 @@
-import { isValidAddress, isValidCertificateHash } from "./utils";
+import { isValidAddress, isValidDocumentHash } from "./utils";
 
 describe("isValidAddress validator", () => {
   it("should return true for address with correct checksum", () => {
@@ -27,10 +27,10 @@ describe("isValidAddress validator", () => {
   });
 });
 
-describe("isValidCertificateHash validator", () => {
+describe("isValidDocumentHash validator", () => {
   it("should return true for address with correct checksum", () => {
     expect(
-      isValidCertificateHash(
+      isValidDocumentHash(
         "0x6b51db6c4e199530bfc720c4302c91c8ee899aec5a1affd0233605a4a335d27d"
       )
     ).toBe(true);
@@ -38,7 +38,7 @@ describe("isValidCertificateHash validator", () => {
 
   it("should return false for address with wrong length", () => {
     expect(
-      isValidCertificateHash(
+      isValidDocumentHash(
         "0x6b51db6c4e199530bfc720c4302c91c8ee899aec5a1affd0233605a4a335d27"
       )
     ).toBe(false);
@@ -46,16 +46,16 @@ describe("isValidCertificateHash validator", () => {
 
   it("should return false for addresses without 0x", () => {
     expect(
-      isValidCertificateHash(
+      isValidDocumentHash(
         "6b51db6c4e199530bfc720c4302c91c8ee899aec5a1affd0233605a4a335d27d"
       )
     ).toBe(false);
   });
 
   it("should return false for non-addresses", () => {
-    expect(isValidCertificateHash("00")).toBe(false);
+    expect(isValidDocumentHash("00")).toBe(false);
     expect(
-      isValidCertificateHash("eaf9503a6555f6cfbf2feb83a6c51a38b641ff")
+      isValidDocumentHash("eaf9503a6555f6cfbf2feb83a6c51a38b641ff")
     ).toBe(false);
   });
 });

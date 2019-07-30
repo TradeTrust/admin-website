@@ -3,14 +3,14 @@ import PropTypes from "prop-types";
 import HashColor from "./UI/HashColor";
 import HashColorInput from "./UI/HashColorInput";
 import { OrangeButton } from "./UI/Button";
-import { isValidCertificateHash } from "../components/utils";
+import { isValidDocumentHash } from "../components/utils";
 
 class StoreIssueBlock extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      certificateHash: "",
-      certificateHashIsValid: true
+      documentHash: "",
+      documentHashIsValid: true
     };
 
     this.onHashChange = this.onHashChange.bind(this);
@@ -19,46 +19,46 @@ class StoreIssueBlock extends Component {
 
   onHashChange(event) {
     this.setState({
-      certificateHash: event.target.value,
-      certificateHashIsValid: isValidCertificateHash(event.target.value)
+      documentHash: event.target.value,
+      documentHashIsValid: isValidDocumentHash(event.target.value)
     });
   }
 
   onIssueClick() {
-    const { adminAddress, storeAddress, handleCertificateIssue } = this.props;
-    const { certificateHash } = this.state;
-    if (isValidCertificateHash(certificateHash)) {
-      handleCertificateIssue({
+    const { adminAddress, storeAddress, handleDocumentIssue } = this.props;
+    const { documentHash } = this.state;
+    if (isValidDocumentHash(documentHash)) {
+      handleDocumentIssue({
         storeAddress,
         fromAddress: adminAddress,
-        certificateHash
+        documentHash
       });
     } else {
       this.setState({
-        certificateHashIsValid: isValidCertificateHash(certificateHash)
+        documentHashIsValid: isValidDocumentHash(documentHash)
       });
     }
   }
 
   render() {
-    const { certificateHash, certificateHashIsValid } = this.state;
-    const { issuingCertificate, issuedTx, networkId } = this.props;
-    const certificateHashMessage = certificateHashIsValid
+    const { documentHash, documentHashIsValid } = this.state;
+    const { issuingDocument, issuedTx, networkId } = this.props;
+    const documentHashMessage = documentHashIsValid
       ? ""
       : "Merkle root is not valid.";
 
     return (
       <div>
         <div>
-          Issue certificates with the Merkle Root Hash
+          Issue documents with the Merkle Root Hash
           <HashColorInput
             className="mt2"
             variant="pill"
             type="hash"
-            hashee={certificateHash}
+            hashee={documentHash}
             onChange={this.onHashChange}
-            value={certificateHash}
-            message={certificateHashMessage}
+            value={documentHash}
+            message={documentHashMessage}
             placeholder="0x…"
           />
         </div>
@@ -66,12 +66,12 @@ class StoreIssueBlock extends Component {
           variant="pill"
           className="mt4"
           onClick={this.onIssueClick}
-          disabled={issuingCertificate}
+          disabled={issuingDocument}
         >
-          {issuingCertificate ? "Issuing…" : "Issue"}
+          {issuingDocument ? "Issuing…" : "Issue"}
         </OrangeButton>
 
-        {issuedTx && !issuingCertificate ? (
+        {issuedTx && !issuingDocument ? (
           <div className="mt5">
             <p>🎉 Batch has been issued.</p>
             <div>
@@ -88,10 +88,10 @@ class StoreIssueBlock extends Component {
 export default StoreIssueBlock;
 
 StoreIssueBlock.propTypes = {
-  issuingCertificate: PropTypes.bool,
+  issuingDocument: PropTypes.bool,
   issuedTx: PropTypes.string,
   storeAddress: PropTypes.string,
   adminAddress: PropTypes.string,
-  handleCertificateIssue: PropTypes.func,
+  handleDocumentIssue: PropTypes.func,
   networkId: PropTypes.number
 };

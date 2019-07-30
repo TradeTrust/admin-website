@@ -112,9 +112,9 @@ export function* deployStore({ payload }) {
   }
 }
 
-export function* issueCertificate({ payload }) {
+export function* issueDocument({ payload }) {
   try {
-    const { fromAddress, storeAddress, certificateHash } = payload;
+    const { fromAddress, storeAddress, documentHash } = payload;
     const web3 = yield getSelectedWeb3();
 
     const { abi } = DocumentStoreDefinition;
@@ -122,7 +122,7 @@ export function* issueCertificate({ payload }) {
       from: fromAddress
     });
 
-    const issueMsg = contract.methods.issue(certificateHash);
+    const issueMsg = contract.methods.issue(documentHash);
     const gasPrice = (yield web3.eth.getGasPrice()) * 5;
     const gasLimit = (yield issueMsg.estimateGas()) * 2;
 
@@ -154,20 +154,20 @@ export function* issueCertificate({ payload }) {
       type: types.ISSUING_CERTIFICATE_FAILURE,
       payload: e.message
     });
-    error("issueCertificate:", e);
+    error("issueDocument:", e);
   }
 }
 
-export function* revokeCertificate({ payload }) {
+export function* revokeDocument({ payload }) {
   try {
-    const { fromAddress, storeAddress, certificateHash } = payload;
+    const { fromAddress, storeAddress, documentHash } = payload;
     const web3 = yield getSelectedWeb3();
 
     const { abi } = DocumentStoreDefinition;
     const contract = new web3.eth.Contract(abi, storeAddress, {
       from: fromAddress
     });
-    const revokeMsg = contract.methods.revoke(certificateHash);
+    const revokeMsg = contract.methods.revoke(documentHash);
     const gasPrice = (yield web3.eth.getGasPrice()) * 5;
     const gasLimit = (yield revokeMsg.estimateGas()) * 2;
 
@@ -198,7 +198,7 @@ export function* revokeCertificate({ payload }) {
       type: types.REVOKING_CERTIFICATE_FAILURE,
       payload: e.message
     });
-    error("revokeCertificate:", e);
+    error("revokeDocument:", e);
   }
 }
 

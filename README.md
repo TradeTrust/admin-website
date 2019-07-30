@@ -1,12 +1,12 @@
-# Certificate Web UI
+# Document Web UI
 
-[![Build Status](https://travis-ci.org/GovTechSG/certificate-web-ui.svg?branch=master)](https://travis-ci.org/GovTechSG/certificate-web-ui)
+[![Build Status](https://travis-ci.org/GovTechSG/document-web-ui.svg?branch=master)](https://travis-ci.org/GovTechSG/document-web-ui)
 
 See also:
 
-* [certificate-schema](https://github.com/GovTechSG/certificate-schema)
-* [certificate-contract](https://github.com/GovTechSG/certificate-contract)
-* [certificate-cli](https://github.com/GovTechSG/certificate-cli)
+* [document-schema](https://github.com/GovTechSG/document-schema)
+* [document-contract](https://github.com/GovTechSG/document-contract)
+* [document-cli](https://github.com/GovTechSG/document-cli)
 
 ## Development
 

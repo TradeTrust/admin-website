@@ -6,7 +6,7 @@ import { faintBlue } from "../styles/variables";
 const Meta = () => (
   <div>
     <Head>
-      <title>OpenCerts - Admin Panel</title>
+      <title>TradeTrust - Admin Panel</title>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta charSet="utf-8" />
       <link

@@ -12,7 +12,7 @@ const BackButton = Selector("#back");
 test("Is rendered correctly", async t => {
   await t
     .expect(NetworkSelector.textContent)
-    .contains("Welcome to OpenCerts Admin Portal");
+    .contains("Welcome to TradeTrust Admin Portal");
   await t.expect(MetamaskButton.visible).ok();
   await t.expect(LedgerButton.visible).ok();
 });

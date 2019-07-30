@@ -17,13 +17,13 @@ import {
   deployStore,
   getStoreAddress,
   updateStoreAddress,
-  issueCertificate,
+  issueDocument,
   getIssuedTx,
   getRevokedTx,
-  revokeCertificate,
-  getrevokingCertificate,
+  revokeDocument,
+  getrevokingDocument,
   getDeploying,
-  getIssuingCertificate,
+  getIssuingDocument,
   getDeployedTx
 } from "../reducers/admin";
 import { updateNetworkId, getNetworkId } from "../reducers/application";
@@ -78,8 +78,8 @@ class AdminContainer extends Component {
     this.refreshCurrentAddress = this.refreshCurrentAddress.bind(this);
     this.handleStoreDeploy = this.handleStoreDeploy.bind(this);
     this.storeAddressOnChange = this.storeAddressOnChange.bind(this);
-    this.handleCertificateIssue = this.handleCertificateIssue.bind(this);
-    this.handleCertificateRevoke = this.handleCertificateRevoke.bind(this);
+    this.handleDocumentIssue = this.handleDocumentIssue.bind(this);
+    this.handleDocumentRevoke = this.handleDocumentRevoke.bind(this);
 
     this.state = {
       localStoreAddress: ""
@@ -112,12 +112,12 @@ class AdminContainer extends Component {
     this.props.deployStore(payload);
   }
 
-  handleCertificateIssue(payload) {
-    this.props.issueCertificate(payload);
+  handleDocumentIssue(payload) {
+    this.props.issueDocument(payload);
   }
 
-  handleCertificateRevoke(payload) {
-    this.props.revokeCertificate(payload);
+  handleDocumentRevoke(payload) {
+    this.props.revokeDocument(payload);
   }
 
   refreshCurrentAddress() {
@@ -128,9 +128,9 @@ class AdminContainer extends Component {
     const {
       adminAddress,
       storeAddress,
-      issuingCertificate,
+      issuingDocument,
       issuedTx,
-      revokingCertificate,
+      revokingDocument,
       revokedTx,
       networkId,
       deploying,
@@ -189,10 +189,10 @@ class AdminContainer extends Component {
                   <h3>Deploy new instance</h3>
                 </Tab>
                 <Tab className="tab pl3">
-                  <h3>Issue certificate batch</h3>
+                  <h3>Issue document batch</h3>
                 </Tab>
                 <Tab className="tab pl3">
-                  <h3>Revoke certificate</h3>
+                  <h3>Revoke document</h3>
                 </Tab>
               </TabList>
               <div className="w-70 pa4 pl5">
@@ -213,8 +213,8 @@ class AdminContainer extends Component {
                       issuedTx={issuedTx}
                       adminAddress={adminAddress}
                       storeAddress={storeAddress}
-                      handleCertificateIssue={this.handleCertificateIssue}
-                      issuingCertificate={issuingCertificate}
+                      handleDocumentIssue={this.handleDocumentIssue}
+                      issuingDocument={issuingDocument}
                     />
                   ) : (
                     <div className="red">Enter a store address first.</div>
@@ -224,11 +224,11 @@ class AdminContainer extends Component {
                   {storeAddress ? (
                     <StoreRevokeBlock
                       networkId={networkId}
-                      revokingCertificate={revokingCertificate}
+                      revokingDocument={revokingDocument}
                       revokedTx={revokedTx}
                       adminAddress={adminAddress}
                       storeAddress={storeAddress}
-                      handleCertificateRevoke={this.handleCertificateRevoke}
+                      handleDocumentRevoke={this.handleDocumentRevoke}
                     />
                   ) : (
                     <div className="red">Enter a store address first.</div>
@@ -249,20 +249,20 @@ const mapStateToProps = store => ({
   adminAddress: getAdminAddress(store),
   storeAddress: getStoreAddress(store),
   issuedTx: getIssuedTx(store),
-  revokingCertificate: getrevokingCertificate(store),
+  revokingDocument: getrevokingDocument(store),
   revokedTx: getRevokedTx(store),
   networkId: getNetworkId(store),
   deploying: getDeploying(store),
   deployedTx: getDeployedTx(store),
-  issuingCertificate: getIssuingCertificate(store)
+  issuingDocument: getIssuingDocument(store)
 });
 
 const mapDispatchToProps = dispatch => ({
   loadAdminAddress: payload => dispatch(loadAdminAddress(payload)),
   updateNetworkId: () => dispatch(updateNetworkId()),
   deployStore: payload => dispatch(deployStore(payload)),
-  issueCertificate: payload => dispatch(issueCertificate(payload)),
-  revokeCertificate: payload => dispatch(revokeCertificate(payload)),
+  issueDocument: payload => dispatch(issueDocument(payload)),
+  revokeDocument: payload => dispatch(revokeDocument(payload)),
   updateStoreAddress: payload => dispatch(updateStoreAddress(payload))
 });
 
@@ -277,14 +277,14 @@ AdminContainer.propTypes = {
   updateNetworkId: PropTypes.func,
   loadAdminAddress: PropTypes.func,
   deployStore: PropTypes.func,
-  issueCertificate: PropTypes.func,
+  issueDocument: PropTypes.func,
   updateStoreAddress: PropTypes.func,
   adminAddress: PropTypes.string,
   storeAddress: PropTypes.string,
-  issuingCertificate: PropTypes.bool,
+  issuingDocument: PropTypes.bool,
   issuedTx: PropTypes.string,
-  revokingCertificate: PropTypes.bool,
+  revokingDocument: PropTypes.bool,
   revokedTx: PropTypes.string,
-  revokeCertificate: PropTypes.func,
+  revokeDocument: PropTypes.func,
   networkId: PropTypes.number
 };

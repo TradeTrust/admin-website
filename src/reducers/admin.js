@@ -7,11 +7,11 @@ export const initialState = {
   deployedTx: null,
 
   issuedTx: "",
-  issuingCertificate: false,
+  issuingDocument: false,
   issuingError: null,
 
   revokedTx: "",
-  revokingCertificate: false,
+  revokingDocument: false,
   revokingError: null
 };
 
@@ -84,38 +84,38 @@ export default function reducer(state = initialState, action) {
     case types.ISSUING_CERTIFICATE:
       return {
         ...state,
-        issuingCertificate: true
+        issuingDocument: true
       };
     case types.ISSUING_CERTIFICATE_SUCCESS:
       return {
         ...state,
-        issuingCertificate: false,
+        issuingDocument: false,
         issuedTx: action.payload,
         issuingError: null
       };
     case types.ISSUING_CERTIFICATE_FAILURE:
       return {
         ...state,
-        issuingCertificate: false,
+        issuingDocument: false,
         issuingError: action.payload,
         issuedTx: ""
       };
     case types.REVOKING_CERTIFICATE:
       return {
         ...state,
-        revokingCertificate: true
+        revokingDocument: true
       };
     case types.REVOKING_CERTIFICATE_SUCCESS:
       return {
         ...state,
-        revokingCertificate: false,
+        revokingDocument: false,
         revokedTx: action.payload,
         revokingError: null
       };
     case types.REVOKING_CERTIFICATE_FAILURE:
       return {
         ...state,
-        revokingCertificate: false,
+        revokingDocument: false,
         revokingError: action.payload,
         revokedTx: ""
       };
@@ -145,14 +145,14 @@ export function updateStoreAddress(payload) {
   };
 }
 
-export function issueCertificate(payload) {
+export function issueDocument(payload) {
   return {
     type: types.ISSUING_CERTIFICATE,
     payload
   };
 }
 
-export function revokeCertificate(payload) {
+export function revokeDocument(payload) {
   return {
     type: types.REVOKING_CERTIFICATE,
     payload
@@ -184,10 +184,10 @@ export function getDeployedTx(store) {
   return store.admin.deployedTx;
 }
 
-export function getIssuingCertificate(store) {
-  return store.admin.issuingCertificate;
+export function getIssuingDocument(store) {
+  return store.admin.issuingDocument;
 }
 
-export function getrevokingCertificate(store) {
-  return store.admin.revokingCertificate;
+export function getrevokingDocument(store) {
+  return store.admin.revokingDocument;
 }
