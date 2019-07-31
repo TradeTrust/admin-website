@@ -5,7 +5,7 @@ import "@babel/polyfill";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { getIsLoading } from "../src/reducers/application";
-import AdminContainer from "../src/components/AdminContainer";
+import AdminContainer from "../src/components/admin";
 import PageLoader from "../src/components/UI/PageLoader";
 import { brandOrange } from "../src/styles/variables";
 
