@@ -19,6 +19,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.0",
     "@emotion/core": "^10.0.10",
+    "@govtechsg/open-attestation": "^1.1.39",
     "@ledgerhq/hw-transport-u2f": "4.48.0",
     "@ledgerhq/web3-subprovider": "4.48.0",
     "debug": "^4.1.1",
@@ -32,6 +33,7 @@
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-dropzone": "^10.1.7",
     "react-redux": "^5.0.1",
     "react-spinners": "^0.5.4",
     "react-tabs": "^2.2.1",

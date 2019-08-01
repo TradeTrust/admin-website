@@ -12,8 +12,8 @@ import { brandOrange } from "../src/styles/variables";
 const AdminPage = props => (
   <React.Fragment>
     {props.isLoading && <PageLoader loaderColor={brandOrange} />}
-    <div className="min-vh-100 pv5">
-      <div className="mw9 mw8-ns center pa4 ph5-ns br3 pv5">
+    <div className="min-vh-100">
+      <div className="mw9 mw8-ns center pa4 br3">
         <AdminContainer {...props} />
       </div>
     </div>
