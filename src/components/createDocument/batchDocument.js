@@ -7,16 +7,16 @@ const reader = new FileReader();
 if (reader.error) {
   handleFileError(reader.error);
 }
-reader.onload = () => {
+reader.onload = (evt) => {
   try {
     const fileName = acceptedFiles[0].name;
-    handleDocumentChange(fileName);
+    handleDocumentChange(evt.target.result, fileName);
   } catch (e) {
     console.log(e)
   }
 };
 if (acceptedFiles && acceptedFiles.length && acceptedFiles.length > 0)
-  acceptedFiles.map(f => reader.readAsText(f)); 
+  acceptedFiles.map(f => reader.readAsDataURL(f)); 
 }
 
 const BatchDocument = (props) => {
