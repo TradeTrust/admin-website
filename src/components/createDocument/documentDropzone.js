@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import Dropzone from "react-dropzone";
 import DefaultView from "./defaultView";
 
@@ -23,7 +24,9 @@ const onFileDrop = (acceptedFiles, handleFileChange, handleFileError) => {
 const DocumentDropzone = props => (
   <Dropzone
     id="certificate-dropzone"
-    onDrop={acceptedFiles => onFileDrop(acceptedFiles, props.handleFileChange, props.handleFileError)}
+    onDrop={acceptedFiles =>
+      onFileDrop(acceptedFiles, props.handleFileChange, props.handleFileError)
+    }
     className="h-100"
   >
     {({ getRootProps, getInputProps }) => (
@@ -39,6 +42,6 @@ const DocumentDropzone = props => (
 export default DocumentDropzone;
 
 DocumentDropzone.propTypes = {
-    handleFileChange: PropTypes.func,
-    handleFileError: PropTypes.func
-  };
+  handleFileChange: PropTypes.func,
+  handleFileError: PropTypes.func
+};
