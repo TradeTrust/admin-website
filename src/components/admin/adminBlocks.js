@@ -76,8 +76,8 @@ const AdminBlocks = ({
         )}
       </TabPanel>
       <TabPanel>
-      <DropzoneContainer handleDocumentBatch={handleDocumentBatch}/>
-        </TabPanel>
+        <DropzoneContainer handleDocumentBatch={handleDocumentBatch} />
+      </TabPanel>
     </div>
   </Tabs>
 );
