@@ -1,4 +1,10 @@
 {
+  "parser": "babel-eslint",
+  "settings": {
+    "import/resolver": {
+      "babel-module": {}
+    }
+  },
   "extends": [
     "plugin:react/recommended",
     "airbnb-base",
