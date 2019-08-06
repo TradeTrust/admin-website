@@ -6,7 +6,7 @@ import DocumentDropzone from "./documentDropzone";
 import PdfDropzone from "./pdfDropzone";
 import { OrangeButton } from "../UI/Button";
 import Input from "../UI/Input";
-import {createBaseDocument} from "../utils";
+import { createBaseDocument } from "../utils";
 
 class DropzoneContainer extends Component {
   constructor(props) {
@@ -34,11 +34,15 @@ class DropzoneContainer extends Component {
   };
 
   onBatchClick = () => {
-    const { documents, issuerName, documentStore, orgUrl} = this.state;
+    const { documents, issuerName, documentStore, orgUrl } = this.state;
     const baseDoc = createBaseDocument();
-    const metaObj = {name: issuerName, documentStore, identityProof: { type: "DNS-TXT", location: orgUrl}};
-    baseDoc["issuers"].push(metaObj);
-    baseDoc["$template"]["url"]= "abc.com"
+    const metaObj = {
+      name: issuerName,
+      documentStore,
+      identityProof: { type: "DNS-TXT", location: orgUrl }
+    };
+    baseDoc.issuers.push(metaObj);
+    baseDoc.$template.url = "abc.com";
     if (!baseDoc.attachments) {
       baseDoc.attachments = [];
     }
@@ -65,7 +69,6 @@ class DropzoneContainer extends Component {
     } catch (e) {
       console.log(e);
     }
-
   };
 
   onInputFieldChange = e => {

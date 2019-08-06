@@ -12,12 +12,11 @@ export const isValidAddress = address => {
 export const isValidDocumentHash = input => /^0x[a-fA-F0-9]{64}$/.test(input);
 
 export const createBaseDocument = () => ({
-  "id": (+ new Date()).toString(),
-  "$template": {
-    "name": "NULL",
-    "type": "EMBEDDED_RENDERER",
-    "url": ""
+  id: (+new Date()).toString(),
+  $template: {
+    name: "NULL",
+    type: "EMBEDDED_RENDERER",
+    url: ""
   },
   issuers: []
 });
-
