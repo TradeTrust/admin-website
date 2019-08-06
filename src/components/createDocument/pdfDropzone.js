@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
-
 import Dropzone from "react-dropzone";
 import PdfDropzoneView from "./pdfDropzoneView";
 
 const onDocumentDrop = (
   acceptedFiles,
+  docId,
   handleDocumentChange,
   handleFileError
 ) => {
@@ -15,52 +15,51 @@ const onDocumentDrop = (
   }
   reader.onload = () => {
     try {
+      const base64String = reader.result;
       const fileName = acceptedFiles[0].name;
-      handleDocumentChange(fileName);
+      handleDocumentChange(base64String, fileName, docId);
     } catch (e) {
       console.log(e);
     }
   };
   if (acceptedFiles && acceptedFiles.length && acceptedFiles.length > 0)
-    acceptedFiles.map(f => reader.readAsText(f));
+    acceptedFiles.map(f => reader.readAsDataURL(f));
 };
 
 const PdfDropzone = props => (
-  <Dropzone
-    id="pdf-dropzone"
-    onDrop={acceptedFiles =>
-      onDocumentDrop(
-        acceptedFiles,
-        props.handleDocumentChange,
-        props.handleFileError
-      )
-    }
-  >
-    {({ getRootProps, getInputProps }) => (
-      <>
-        <PdfDropzoneView
-          accept={true}
-          getRootProps={getRootProps}
-          getInputProps={getInputProps}
-        />
-        <PdfDropzoneView
-          accept={true}
-          getRootProps={getRootProps}
-          getInputProps={getInputProps}
-        />
-        <PdfDropzoneView
-          accept={true}
-          getRootProps={getRootProps}
-          getInputProps={getInputProps}
-        />
-      </>
-    )}
-  </Dropzone>
+  <>
+    {Object.keys(props.documents).map((docId, idx) => (
+      <Dropzone
+        id="pdf-dropzone"
+        key={idx}
+        onDrop={acceptedFiles =>
+          onDocumentDrop(
+            acceptedFiles,
+            docId,
+            props.onDocumentFileChange,
+            props.handleFileError
+          )
+        }
+      >
+        {({ getRootProps, getInputProps }) => (
+          <>
+            <PdfDropzoneView
+              accept={true}
+              documents={props.documents[docId]}
+              getRootProps={getRootProps}
+              getInputProps={getInputProps}
+            />
+          </>
+        )}
+      </Dropzone>
+    ))}
+  </>
 );
 
 export default PdfDropzone;
 
 PdfDropzone.propTypes = {
-  handleDocumentChange: PropTypes.func,
-  handleFileError: PropTypes.func
+  onDocumentFileChange: PropTypes.func,
+  handleFileError: PropTypes.func,
+  documents: PropTypes.object
 };

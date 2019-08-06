@@ -50,7 +50,23 @@ const dropzoneStyle = (
   />
 );
 
-const PdfDropzoneView = ({ getRootProps, getInputProps, hover, accept }) => (
+const renderPdf = document => (
+  <div className="pdf-container">
+    <img
+      alt=".tradetrust Dropzone"
+      src="/static/images/dropzone/pdf_file.svg"
+    />
+    <span>{document.name}</span>
+  </div>
+);
+
+const PdfDropzoneView = ({
+  getRootProps,
+  getInputProps,
+  hover,
+  accept,
+  documents
+}) => (
   <>
     {dropzoneStyle}
     <div
@@ -73,27 +89,7 @@ const PdfDropzoneView = ({ getRootProps, getInputProps, hover, accept }) => (
         Drag and drop your pdf file
       </div>
       <div className="img-container">
-        <div className="pdf-container">
-          <img
-            alt=".tradetrust Dropzone"
-            src="/static/images/dropzone/pdf_file.svg"
-          />
-          <span>ABC.pdf</span>
-        </div>
-        <div className="pdf-container">
-          <img
-            alt=".tradetrust Dropzone"
-            src="/static/images/dropzone/pdf_file.svg"
-          />
-          <span>Demo_govtech pdf and tradetrust.pdf</span>
-        </div>
-        <div className="pdf-container">
-          <img
-            alt=".tradetrust Dropzone"
-            src="/static/images/dropzone/pdf_file.svg"
-          />
-          <span>Demo_govtech pdf and tradetrust.pdf</span>
-        </div>
+        {documents.map(doc => renderPdf(doc))}
       </div>
       <div className="text-muted row">
         <div className="mx-auto">
@@ -109,6 +105,7 @@ export default PdfDropzoneView;
 PdfDropzoneView.propTypes = {
   hover: PropTypes.bool,
   accept: PropTypes.bool,
+  documents: PropTypes.object,
   getRootProps: PropTypes.func,
   getInputProps: PropTypes.func
 };

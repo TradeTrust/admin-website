@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { issueDocument } from "@govtechsg/tradetrust-schema";
+import { groupBy } from "lodash";
 
 import DocumentDropzone from "./documentDropzone";
 import PdfDropzone from "./pdfDropzone";
@@ -10,35 +11,28 @@ class DropzoneContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      issuerName: "",
+      documentStore: "",
+      orgUrl: "",
       fileError: false,
-      batchStep: "step1",
-      file: null,
-      fileName: "",
+      documentId: 0,
+      metaData: [],
       documents: [],
       batchingDocument: false
     };
-    this.handleDocumentChange = this.handleDocumentChange.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
     this.handleFileError = this.handleFileError.bind(this);
   }
 
   handleFileError = () => {};
 
-  handleFileChange(file, fileName) {
-    this.setState({ fileError: false, batchStep: "step2", file, fileName });
-  }
-
-  handleDocumentChange(docName) {
+  onDocumentFileChange = (data, docName, docId = false) => {
     const documents = JSON.parse(JSON.stringify(this.state.documents));
-    documents.push({ value: null, name: docName });
-    this.setState({ documents });
-  }
+    const { documentId } = this.state;
+    const idValue = docId || documentId + 1;
 
-  handleDocumentChange = (data, docName) => {
-    const documents = JSON.parse(JSON.stringify(this.state.documents));
-    documents.push({ value: data, name: docName });
-    console.log(data, docName);
-    this.setState({ documents });
+    documents.push({ value: data, name: docName, id: idValue });
+    this.setState({ documents, documentId: documentId + 1 });
   };
 
   onBatchClick = () => {
@@ -74,8 +68,19 @@ class DropzoneContainer extends Component {
     this.setState({ file: updatedFile });
   };
 
+  onInputFieldChange = e => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
   render() {
-    const { batchingDocument } = this.state;
+    const {
+      batchingDocument,
+      issuerName,
+      documentStore,
+      orgUrl,
+      documents
+    } = this.state;
+    const groupDocuments = groupBy(documents, "id");
     return (
       <div>
         <div className="mb2">
@@ -83,11 +88,12 @@ class DropzoneContainer extends Component {
           <br />
           <Input
             className="mt2"
+            name="issuerName"
             variant="pill"
             type="text"
             placeholder="Name of organization"
-            onChange={this.onBatchClick}
-            value={""}
+            onChange={this.onInputFieldChange}
+            value={issuerName}
             message={""}
             size={50}
             required
@@ -98,12 +104,13 @@ class DropzoneContainer extends Component {
           <br />
           <Input
             className="mt2"
+            name="documentStore"
             variant="pill"
             type="text"
             placeholder="Ether ethereum address"
-            onChange={this.onBatchClick}
-            value={""}
-            message={""}
+            onChange={this.onInputFieldChange}
+            value={documentStore}
+            message={documentStore}
             size={50}
             required
           />
@@ -113,21 +120,25 @@ class DropzoneContainer extends Component {
           <br />
           <Input
             className="mt2"
+            name="orgUrl"
             variant="pill"
             type="text"
             placeholder="Url of the organization"
-            onChange={this.onBatchClick}
-            value={""}
+            onChange={this.onInputFieldChange}
+            value={orgUrl}
             message={""}
             size={50}
             required
           />
         </div>
         <div className="mb4">
-          <DocumentDropzone handleFileChange={this.handleFileChange} />
+          <DocumentDropzone onDocumentFileChange={this.onDocumentFileChange} />
         </div>
         <div className="mb4">
-          <PdfDropzone />
+          <PdfDropzone
+            documents={groupDocuments}
+            onDocumentFileChange={this.onDocumentFileChange}
+          />
         </div>
         <OrangeButton
           variant="pill"
