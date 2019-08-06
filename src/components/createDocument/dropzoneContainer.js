@@ -6,6 +6,7 @@ import DocumentDropzone from "./documentDropzone";
 import PdfDropzone from "./pdfDropzone";
 import { OrangeButton } from "../UI/Button";
 import Input from "../UI/Input";
+import {createBaseDocument} from "../utils";
 
 class DropzoneContainer extends Component {
   constructor(props) {
@@ -16,12 +17,9 @@ class DropzoneContainer extends Component {
       orgUrl: "",
       fileError: false,
       documentId: 0,
-      metaData: [],
       documents: [],
       batchingDocument: false
     };
-    this.handleFileChange = this.handleFileChange.bind(this);
-    this.handleFileError = this.handleFileError.bind(this);
   }
 
   handleFileError = () => {};
@@ -36,12 +34,15 @@ class DropzoneContainer extends Component {
   };
 
   onBatchClick = () => {
-    const { documents, file } = this.state;
-    const updatedFile = JSON.parse(JSON.stringify(file));
-    if (!file.attachments) {
-      updatedFile.attachments = [];
+    const { documents, issuerName, documentStore, orgUrl} = this.state;
+    const baseDoc = createBaseDocument();
+    const metaObj = {name: issuerName, documentStore, identityProof: { type: "DNS-TXT", location: orgUrl}};
+    baseDoc["issuers"].push(metaObj);
+    baseDoc["$template"]["url"]= "abc.com"
+    if (!baseDoc.attachments) {
+      baseDoc.attachments = [];
     }
-    const attachmentLength = updatedFile.attachments.length;
+    const attachmentLength = baseDoc.attachments.length;
 
     documents.forEach((doc, index) => {
       let keyIndex = index;
@@ -49,23 +50,22 @@ class DropzoneContainer extends Component {
         keyIndex = attachmentLength + index;
       }
 
-      updatedFile.attachments[keyIndex] = {
+      baseDoc.attachments[keyIndex] = {
         filename: "",
         type: "application/pdf",
         data: null
       };
 
-      updatedFile.attachments[keyIndex].filename = doc.name;
-      updatedFile.attachments[keyIndex].data = doc.value;
+      baseDoc.attachments[keyIndex].filename = doc.name;
+      baseDoc.attachments[keyIndex].data = doc.value;
     });
     try {
-      const signedDocument = issueDocument(updatedFile, "1.0");
+      const signedDocument = issueDocument(baseDoc, "1.0");
       console.log(signedDocument);
     } catch (e) {
       console.log(e);
     }
 
-    this.setState({ file: updatedFile });
   };
 
   onInputFieldChange = e => {
