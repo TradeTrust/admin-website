@@ -7,6 +7,7 @@ import PdfDropzone from "./pdfDropzone";
 import { OrangeButton } from "../UI/Button";
 import Input from "../UI/Input";
 import { createBaseDocument } from "../utils";
+import DocumentList from "./documentList";
 
 class DropzoneContainer extends Component {
   constructor(props) {
@@ -14,11 +15,13 @@ class DropzoneContainer extends Component {
     this.state = {
       issuerName: "",
       documentStore: "",
+      templateUrl: "",
       orgUrl: "",
       fileError: false,
       documentId: 0,
       documents: [],
-      batchingDocument: false
+      batchingDocument: false,
+      signedDoc: []
     };
   }
 
@@ -34,7 +37,13 @@ class DropzoneContainer extends Component {
   };
 
   onBatchClick = () => {
-    const { documents, issuerName, documentStore, orgUrl } = this.state;
+    const {
+      documents,
+      issuerName,
+      documentStore,
+      orgUrl,
+      templateUrl
+    } = this.state;
     const baseDoc = createBaseDocument();
     const metaObj = {
       name: issuerName,
@@ -42,32 +51,31 @@ class DropzoneContainer extends Component {
       identityProof: { type: "DNS-TXT", location: orgUrl }
     };
     baseDoc.issuers.push(metaObj);
-    baseDoc.$template.url = "abc.com";
-    if (!baseDoc.attachments) {
-      baseDoc.attachments = [];
-    }
-    const attachmentLength = baseDoc.attachments.length;
+    baseDoc.$template.url = templateUrl;
 
-    documents.forEach((doc, index) => {
-      let keyIndex = index;
-      if (attachmentLength > index) {
-        keyIndex = attachmentLength + index;
-      }
-
-      baseDoc.attachments[keyIndex] = {
-        filename: "",
-        type: "application/pdf",
-        data: null
-      };
-
-      baseDoc.attachments[keyIndex].filename = doc.name;
-      baseDoc.attachments[keyIndex].data = doc.value;
+    const groupDocuments = groupBy(documents, "id");
+    const signedDoc = Object.keys(groupDocuments).map(docId => {
+      const jsonData = this.batchPdf(baseDoc, groupDocuments[docId]);
+      return this.issueDocument(jsonData);
     });
+    this.setState({ signedDoc });
+  };
+
+  batchPdf = (baseDoc, docs) => {
+    const jsonDoc = baseDoc;
+    jsonDoc.attachments = docs.map(doc => ({
+      filename: doc.name,
+      type: "application/pdf",
+      data: doc.value
+    }));
+    return jsonDoc;
+  };
+
+  issueDocument = rawJson => {
     try {
-      const signedDocument = issueDocument(baseDoc, "1.0");
-      console.log(signedDocument);
+      return issueDocument(rawJson, "1.0");
     } catch (e) {
-      console.log(e);
+      throw new Error("Invalid Document");
     }
   };
 
@@ -80,8 +88,10 @@ class DropzoneContainer extends Component {
       batchingDocument,
       issuerName,
       documentStore,
+      templateUrl,
       orgUrl,
-      documents
+      documents,
+      signedDoc
     } = this.state;
     const groupDocuments = groupBy(documents, "id");
     return (
@@ -118,6 +128,22 @@ class DropzoneContainer extends Component {
             required
           />
         </div>
+        <div className="mb2">
+          Template Url
+          <br />
+          <Input
+            className="mt2"
+            name="orgUrl"
+            variant="pill"
+            type="text"
+            placeholder="Url of the template renderer"
+            onChange={this.onInputFieldChange}
+            value={templateUrl}
+            message={""}
+            size={50}
+            required
+          />
+        </div>
         <div className="mb4">
           Organization Url
           <br />
@@ -143,6 +169,11 @@ class DropzoneContainer extends Component {
             onDocumentFileChange={this.onDocumentFileChange}
           />
         </div>
+        {signedDoc.length > 0 && (
+          <div style={{ display: "flex" }}>
+            <DocumentList signedDocuments={signedDoc} />
+          </div>
+        )}
         <OrangeButton
           variant="pill"
           className="mt4"

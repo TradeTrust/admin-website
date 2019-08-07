@@ -29,29 +29,32 @@ const onDocumentDrop = (
 const PdfDropzone = props => (
   <>
     {Object.keys(props.documents).map((docId, idx) => (
-      <Dropzone
-        id="pdf-dropzone"
-        key={idx}
-        onDrop={acceptedFiles =>
-          onDocumentDrop(
-            acceptedFiles,
-            docId,
-            props.onDocumentFileChange,
-            props.handleFileError
-          )
-        }
-      >
-        {({ getRootProps, getInputProps }) => (
-          <>
-            <PdfDropzoneView
-              accept={true}
-              documents={props.documents[docId]}
-              getRootProps={getRootProps}
-              getInputProps={getInputProps}
-            />
-          </>
-        )}
-      </Dropzone>
+      <>
+        <h3 className="mb2">{`Doc-${docId}.json`}</h3>
+        <Dropzone
+          id="pdf-dropzone"
+          key={idx}
+          onDrop={acceptedFiles =>
+            onDocumentDrop(
+              acceptedFiles,
+              docId,
+              props.onDocumentFileChange,
+              props.handleFileError
+            )
+          }
+        >
+          {({ getRootProps, getInputProps }) => (
+            <>
+              <PdfDropzoneView
+                accept={true}
+                documents={props.documents[docId]}
+                getRootProps={getRootProps}
+                getInputProps={getInputProps}
+              />
+            </>
+          )}
+        </Dropzone>
+      </>
     ))}
   </>
 );

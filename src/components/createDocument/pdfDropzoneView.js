@@ -105,7 +105,7 @@ export default PdfDropzoneView;
 PdfDropzoneView.propTypes = {
   hover: PropTypes.bool,
   accept: PropTypes.bool,
-  documents: PropTypes.object,
+  documents: PropTypes.array,
   getRootProps: PropTypes.func,
   getInputProps: PropTypes.func
 };
