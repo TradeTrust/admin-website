@@ -6,8 +6,9 @@ import DocumentDropzone from "./documentDropzone";
 import PdfDropzone from "./pdfDropzone";
 import { OrangeButton } from "../UI/Button";
 import Input from "../UI/Input";
-import { createBaseDocument } from "../utils";
+import { createBaseDocument, isValidAddress } from "../utils";
 import DocumentList from "./documentList";
+import { invalidColor } from "../../styles/variables";
 
 class DropzoneContainer extends Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class DropzoneContainer extends Component {
     };
   }
 
-  handleFileError = () => {};
+  handleFileError = () => this.setState({ fileError: true });
 
   onDocumentFileChange = (data, docName, docId = false) => {
     const documents = JSON.parse(JSON.stringify(this.state.documents));
@@ -34,42 +35,48 @@ class DropzoneContainer extends Component {
     const idValue = docId || documentId + 1;
 
     documents.push({ value: data, name: docName, id: idValue });
-    this.setState({ documents, documentId: documentId + 1 });
+    this.setState({ documents, documentId: documentId + 1, fileError: false });
   };
 
   onBatchClick = () => {
-    const {
-      documents,
-      issuerName,
-      documentStore,
-      orgUrl,
-      templateUrl
-    } = this.state;
-    if (
-      !issuerName ||
-      !documentStore ||
-      !orgUrl ||
-      !templateUrl ||
-      documents.length === 0
-    ) {
-      this.setState({ formError: true });
-      return;
-    }
-    const baseDoc = createBaseDocument();
-    const metaObj = {
-      name: issuerName,
-      documentStore,
-      identityProof: { type: "DNS-TXT", location: orgUrl }
-    };
-    baseDoc.issuers.push(metaObj);
-    baseDoc.$template.url = templateUrl;
+    try {
+      const {
+        documents,
+        issuerName,
+        documentStore,
+        orgUrl,
+        templateUrl
+      } = this.state;
+      if (
+        !issuerName ||
+        !documentStore ||
+        !isValidAddress(documentStore) ||
+        !orgUrl ||
+        !templateUrl ||
+        documents.length === 0
+      ) {
+        this.setState({ formError: true });
+        return;
+      }
+      this.setState({ creatingDocument: true, formError: false });
+      const baseDoc = createBaseDocument();
+      const metaObj = {
+        name: issuerName,
+        documentStore,
+        identityProof: { type: "DNS-TXT", location: orgUrl }
+      };
+      baseDoc.issuers.push(metaObj);
+      baseDoc.$template.url = templateUrl;
 
-    const groupDocuments = groupBy(documents, "id");
-    const signedDoc = Object.keys(groupDocuments).map(docId => {
-      const jsonData = this.batchPdf(baseDoc, groupDocuments[docId]);
-      return this.issueDocument(jsonData);
-    });
-    this.setState({ signedDoc });
+      const groupDocuments = groupBy(documents, "id");
+      const signedDoc = Object.keys(groupDocuments).map(docId => {
+        const jsonData = this.batchPdf(baseDoc, groupDocuments[docId]);
+        return this.issueDocument(jsonData);
+      });
+      this.setState({ signedDoc, creatingDocument: false });
+    } catch (e) {
+      this.setState({ fileError: true });
+    }
   };
 
   batchPdf = (baseDoc, docs) => {
@@ -86,7 +93,7 @@ class DropzoneContainer extends Component {
     try {
       return issueDocument(rawJson, "1.0");
     } catch (e) {
-      throw new Error("Invalid Document");
+      throw new Error("Invalid document");
     }
   };
 
@@ -94,8 +101,26 @@ class DropzoneContainer extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  getErrorMessage = (formError, fieldError) =>
-    formError && fieldError ? "This field is required" : "";
+  getErrorMessage = (formError, fieldValue, fieldName) => {
+    if (
+      formError &&
+      fieldValue &&
+      fieldName === "documentStore" &&
+      !isValidAddress(fieldValue)
+    )
+      return "Enter valid store address";
+    return formError && !fieldValue ? "This field is required" : "";
+  };
+
+  resetForm = () =>
+    this.setState({
+      formError: false,
+      fileError: false,
+      documentId: 0,
+      documents: [],
+      creatingDocument: false,
+      signedDoc: []
+    });
 
   render() {
     const {
@@ -106,7 +131,8 @@ class DropzoneContainer extends Component {
       orgUrl,
       documents,
       signedDoc,
-      formError
+      formError,
+      fileError
     } = this.state;
     const groupDocuments = groupBy(documents, "id");
     return (
@@ -122,7 +148,7 @@ class DropzoneContainer extends Component {
             placeholder="Name of organization"
             onChange={this.onInputFieldChange}
             value={issuerName}
-            message={this.getErrorMessage(formError, !issuerName)}
+            message={this.getErrorMessage(formError, issuerName)}
             size={50}
             required
           />
@@ -138,7 +164,11 @@ class DropzoneContainer extends Component {
             placeholder="Ether ethereum address"
             onChange={this.onInputFieldChange}
             value={documentStore}
-            message={this.getErrorMessage(formError, !documentStore)}
+            message={this.getErrorMessage(
+              formError,
+              documentStore,
+              "documentStore"
+            )}
             size={50}
             required
           />
@@ -154,7 +184,7 @@ class DropzoneContainer extends Component {
             placeholder="Url of the template renderer"
             onChange={this.onInputFieldChange}
             value={templateUrl}
-            message={this.getErrorMessage(formError, !templateUrl)}
+            message={this.getErrorMessage(formError, templateUrl)}
             size={50}
             required
           />
@@ -170,18 +200,28 @@ class DropzoneContainer extends Component {
             placeholder="Url of the organization"
             onChange={this.onInputFieldChange}
             value={orgUrl}
-            message={this.getErrorMessage(formError, !orgUrl)}
+            message={this.getErrorMessage(formError, orgUrl)}
             size={50}
             required
           />
         </div>
         <div className="mb4">
-          <DocumentDropzone onDocumentFileChange={this.onDocumentFileChange} />
+          <h3> Drag and drop pdf file to create new document</h3>
+          <br />
+          <DocumentDropzone
+            onDocumentFileChange={this.onDocumentFileChange}
+            error={fileError}
+            handleFileError={this.handleFileError}
+          />
+          {formError && documents.length === 0 && (
+            <small style={{ color: invalidColor }}>Attachments required</small>
+          )}
         </div>
         <div className="mb4">
           <PdfDropzone
             documents={groupDocuments}
             onDocumentFileChange={this.onDocumentFileChange}
+            handleFileError={this.handleFileError}
           />
         </div>
         {signedDoc.length > 0 && (

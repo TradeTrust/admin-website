@@ -20,3 +20,8 @@ export const createBaseDocument = () => ({
   },
   issuers: []
 });
+
+const validExt = /(.*)(\.)(pdf)$/;
+
+export const isValidFileExtension = fileName =>
+  validExt.test(fileName.toLowerCase());

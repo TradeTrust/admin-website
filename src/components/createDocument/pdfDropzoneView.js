@@ -31,7 +31,7 @@ const dropzoneStyle = (
         margin-bottom: 1rem;
         display: flex;
         img {
-          height: 70px;
+          height: 50px;
           float: left;
           margin: 5px;
         }
@@ -56,7 +56,7 @@ const renderPdf = document => (
       alt=".tradetrust Dropzone"
       src="/static/images/dropzone/pdf_file.svg"
     />
-    <span>{document.name}</span>
+    <span style={{ fontSize: 12 }}>{document.name}</span>
   </div>
 );
 
@@ -86,7 +86,7 @@ const PdfDropzoneView = ({
         className="text-brand-dark"
         style={{ fontSize: "1.375rem", fontWeight: 500 }}
       >
-        Drag and drop your pdf file
+        Drag and drop pdf files
       </div>
       <div className="img-container">
         {documents.map(doc => renderPdf(doc))}

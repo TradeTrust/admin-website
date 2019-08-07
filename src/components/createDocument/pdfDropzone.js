@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import Dropzone from "react-dropzone";
 import PdfDropzoneView from "./pdfDropzoneView";
+import { isValidFileExtension } from "../utils";
 
 const onDocumentDrop = (
   acceptedFiles,
@@ -17,9 +18,10 @@ const onDocumentDrop = (
     try {
       const base64String = reader.result;
       const fileName = acceptedFiles[0].name;
+      if (!isValidFileExtension(fileName)) throw new Error("Invalid File Type");
       handleDocumentChange(base64String, fileName, docId);
     } catch (e) {
-      console.log(e);
+      handleFileError(e);
     }
   };
   if (acceptedFiles && acceptedFiles.length && acceptedFiles.length > 0)
@@ -30,7 +32,10 @@ const PdfDropzone = props => (
   <>
     {Object.keys(props.documents).map((docId, idx) => (
       <>
-        <h3 className="mb2">{`Doc-${docId}.json`}</h3>
+        {idx === 0 && (
+          <h3>Drag and drop more pdf files to add to the document</h3>
+        )}
+        <li className="mb4">{`Doc-${docId}.json`}</li>
         <Dropzone
           id="pdf-dropzone"
           key={idx}

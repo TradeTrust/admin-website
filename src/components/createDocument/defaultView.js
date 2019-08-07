@@ -75,7 +75,7 @@ const dropzoneStyle = (
       .image-container {
         margin-bottom: 1rem;
         img {
-          height: 110px;
+          height: 70px;
         }
       }
 
@@ -157,13 +157,13 @@ const dropzoneStyle = (
   />
 );
 
-const DefaultView = ({ getRootProps, getInputProps, hover, accept }) => (
+const DefaultView = ({ getRootProps, getInputProps, accept }) => (
   <>
     {dropzoneStyle}
     <div
       className={`viewer-container ${
         // eslint-disable-next-line no-nested-ternary
-        hover ? (accept ? "accept" : "invalid") : "default"
+        accept ? "default" : "invalid"
       }`}
       style={{ borderRadius: 10 }}
       {...getRootProps()}
