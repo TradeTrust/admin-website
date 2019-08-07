@@ -178,15 +178,14 @@ const DefaultView = ({ getRootProps, getInputProps, hover, accept }) => (
       </div>
       {accept ? null : (
         <div>
-          File cannot be read. Please check that you have a valid .tt or .json
-          file
+          File cannot be read. Please check that you have a valid .pdf file
         </div>
       )}
       <div
         className="text-brand-dark mb4"
         style={{ fontSize: "1.375rem", fontWeight: 500 }}
       >
-        Drag and drop your raw json file
+        Drag and drop your attachments
       </div>
       <div className="text-muted row mb2">
         <div className="col-4">

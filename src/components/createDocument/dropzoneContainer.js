@@ -17,10 +17,11 @@ class DropzoneContainer extends Component {
       documentStore: "",
       templateUrl: "",
       orgUrl: "",
+      formError: false,
       fileError: false,
       documentId: 0,
       documents: [],
-      batchingDocument: false,
+      creatingDocument: false,
       signedDoc: []
     };
   }
@@ -44,6 +45,16 @@ class DropzoneContainer extends Component {
       orgUrl,
       templateUrl
     } = this.state;
+    if (
+      !issuerName ||
+      !documentStore ||
+      !orgUrl ||
+      !templateUrl ||
+      documents.length === 0
+    ) {
+      this.setState({ formError: true });
+      return;
+    }
     const baseDoc = createBaseDocument();
     const metaObj = {
       name: issuerName,
@@ -83,15 +94,19 @@ class DropzoneContainer extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
+  getErrorMessage = (formError, fieldError) =>
+    formError && fieldError ? "This field is required" : "";
+
   render() {
     const {
-      batchingDocument,
+      creatingDocument,
       issuerName,
       documentStore,
       templateUrl,
       orgUrl,
       documents,
-      signedDoc
+      signedDoc,
+      formError
     } = this.state;
     const groupDocuments = groupBy(documents, "id");
     return (
@@ -107,7 +122,7 @@ class DropzoneContainer extends Component {
             placeholder="Name of organization"
             onChange={this.onInputFieldChange}
             value={issuerName}
-            message={""}
+            message={this.getErrorMessage(formError, !issuerName)}
             size={50}
             required
           />
@@ -123,7 +138,7 @@ class DropzoneContainer extends Component {
             placeholder="Ether ethereum address"
             onChange={this.onInputFieldChange}
             value={documentStore}
-            message={documentStore}
+            message={this.getErrorMessage(formError, !documentStore)}
             size={50}
             required
           />
@@ -133,13 +148,13 @@ class DropzoneContainer extends Component {
           <br />
           <Input
             className="mt2"
-            name="orgUrl"
+            name="templateUrl"
             variant="pill"
             type="text"
             placeholder="Url of the template renderer"
             onChange={this.onInputFieldChange}
             value={templateUrl}
-            message={""}
+            message={this.getErrorMessage(formError, !templateUrl)}
             size={50}
             required
           />
@@ -155,7 +170,7 @@ class DropzoneContainer extends Component {
             placeholder="Url of the organization"
             onChange={this.onInputFieldChange}
             value={orgUrl}
-            message={""}
+            message={this.getErrorMessage(formError, !orgUrl)}
             size={50}
             required
           />
@@ -178,9 +193,9 @@ class DropzoneContainer extends Component {
           variant="pill"
           className="mt4"
           onClick={this.onBatchClick}
-          disabled={batchingDocument}
+          disabled={creatingDocument}
         >
-          {batchingDocument ? "Batching…" : "Batch Document"}
+          {creatingDocument ? "Creating..." : "Create Document"}
         </OrangeButton>
       </div>
     );

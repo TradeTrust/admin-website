@@ -33,7 +33,7 @@ const AdminBlocks = ({
         <h3>Revoke document</h3>
       </Tab>
       <Tab className="tab pl3">
-        <h3>Batch document</h3>
+        <h3>Create document</h3>
       </Tab>
     </TabList>
     <div className="w-70 pa4 pl5">
