@@ -27,13 +27,13 @@ const AdminBlocks = ({
         <h3>Deploy new instance</h3>
       </Tab>
       <Tab className="tab pl3">
+        <h3>Create document</h3>
+      </Tab>
+      <Tab className="tab pl3">
         <h3>Issue document batch</h3>
       </Tab>
       <Tab className="tab pl3">
         <h3>Revoke document</h3>
-      </Tab>
-      <Tab className="tab pl3">
-        <h3>Create document</h3>
       </Tab>
     </TabList>
     <div className="w-70 pa4 pl5">
@@ -46,6 +46,9 @@ const AdminBlocks = ({
           networkId={networkId}
           deployedTx={deployedTx}
         />
+      </TabPanel>
+      <TabPanel>
+        <DropzoneContainer handleDocumentBatch={handleDocumentBatch} />
       </TabPanel>
       <TabPanel>
         {storeAddress ? (
@@ -74,9 +77,6 @@ const AdminBlocks = ({
         ) : (
           <div className="red">Enter a store address first.</div>
         )}
-      </TabPanel>
-      <TabPanel>
-        <DropzoneContainer handleDocumentBatch={handleDocumentBatch} />
       </TabPanel>
     </div>
   </Tabs>
