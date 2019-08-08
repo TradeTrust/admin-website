@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { issueDocument } from "@govtechsg/tradetrust-schema";
+import { issueDocuments } from "@govtechsg/tradetrust-schema";
 import { groupBy } from "lodash";
 
 import DocumentDropzone from "./documentDropzone";
@@ -20,7 +20,6 @@ class DropzoneContainer extends Component {
     this.state = {
       issuerName: "",
       documentStore: "",
-      templateUrl: "",
       orgUrl: "",
       formError: false,
       fileError: false,
@@ -54,15 +53,13 @@ class DropzoneContainer extends Component {
         documents,
         issuerName,
         documentStore,
-        orgUrl,
-        templateUrl
+        orgUrl
       } = this.state;
       if (
         !issuerName ||
         !documentStore ||
         !isValidAddress(documentStore) ||
         !orgUrl ||
-        !templateUrl ||
         documents.length === 0
       ) {
         this.setState({ formError: true });
@@ -76,13 +73,12 @@ class DropzoneContainer extends Component {
         identityProof: { type: "DNS-TXT", location: orgUrl }
       };
       baseDoc.issuers.push(metaObj);
-      baseDoc.$template.url = templateUrl;
 
       const groupDocuments = groupBy(documents, "id");
-      const signedDoc = Object.keys(groupDocuments).map(docId => {
-        const jsonData = this.batchPdf(baseDoc, groupDocuments[docId]);
-        return this.issueDocument(jsonData);
+      const unSignedData = Object.keys(groupDocuments).map(docId => {
+        return this.batchPdf(baseDoc, groupDocuments[docId]);
       });
+      const signedDoc = this.issueDocuments(unSignedData);
       this.setState({ signedDoc, creatingDocument: false });
     } catch (e) {
       error(e);
@@ -99,9 +95,9 @@ class DropzoneContainer extends Component {
     return jsonDoc;
   };
 
-  issueDocument = rawJson => {
+  issueDocuments = rawJson => {
     try {
-      return issueDocument(rawJson, "1.0");
+      return issueDocuments(rawJson);
     } catch (e) {
       throw new Error("Invalid document");
     }
@@ -137,7 +133,6 @@ class DropzoneContainer extends Component {
       creatingDocument,
       issuerName,
       documentStore,
-      templateUrl,
       orgUrl,
       documents,
       signedDoc,
@@ -151,6 +146,7 @@ class DropzoneContainer extends Component {
           Issuer Name
           <br />
           <Input
+            id="issuer"
             className="mt2"
             name="issuerName"
             variant="pill"
@@ -167,6 +163,7 @@ class DropzoneContainer extends Component {
           Document Store
           <br />
           <Input
+            id="store"
             className="mt2"
             name="documentStore"
             variant="pill"
@@ -183,26 +180,11 @@ class DropzoneContainer extends Component {
             required
           />
         </div>
-        <div className="mb2">
-          Template Url
-          <br />
-          <Input
-            className="mt2"
-            name="templateUrl"
-            variant="pill"
-            type="text"
-            placeholder="Url of the template renderer"
-            onChange={this.onInputFieldChange}
-            value={templateUrl}
-            message={this.getErrorMessage(formError, templateUrl)}
-            size={50}
-            required
-          />
-        </div>
         <div className="mb4">
           Organization Url
           <br />
           <Input
+            id="orgUrl"
             className="mt2"
             name="orgUrl"
             variant="pill"
