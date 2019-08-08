@@ -161,7 +161,7 @@ class DropzoneContainer extends Component {
             name="documentStore"
             variant="pill"
             type="text"
-            placeholder="Ether ethereum address"
+            placeholder="Enter ethereum address"
             onChange={this.onInputFieldChange}
             value={documentStore}
             message={this.getErrorMessage(

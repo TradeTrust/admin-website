@@ -31,7 +31,7 @@ const onDocumentDrop = (
 const PdfDropzone = props => (
   <>
     {Object.keys(props.documents).map((docId, idx) => (
-      <>
+      <div key={idx}>
         {idx === 0 && (
           <h3>Drag and drop more pdf files to add to the document</h3>
         )}
@@ -51,7 +51,6 @@ const PdfDropzone = props => (
           {({ getRootProps, getInputProps }) => (
             <>
               <PdfDropzoneView
-                accept={true}
                 documents={props.documents[docId]}
                 getRootProps={getRootProps}
                 getInputProps={getInputProps}
@@ -59,7 +58,7 @@ const PdfDropzone = props => (
             </>
           )}
         </Dropzone>
-      </>
+      </div>
     ))}
   </>
 );

@@ -50,5 +50,5 @@ export default DocumentDropzone;
 DocumentDropzone.propTypes = {
   onDocumentFileChange: PropTypes.func,
   handleFileError: PropTypes.func,
-  error: PropTypes.object
+  error: PropTypes.bool
 };
