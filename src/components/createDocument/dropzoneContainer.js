@@ -10,6 +10,10 @@ import { createBaseDocument, isValidAddress } from "../utils";
 import DocumentList from "./documentList";
 import { invalidColor } from "../../styles/variables";
 
+import { getLogger } from "../../logger";
+
+const { trace, error } = getLogger("services:dropzoneContainer");
+
 class DropzoneContainer extends Component {
   constructor(props) {
     super(props);
@@ -32,10 +36,16 @@ class DropzoneContainer extends Component {
   onDocumentFileChange = (data, docName, docId = false) => {
     const documents = JSON.parse(JSON.stringify(this.state.documents));
     const { documentId } = this.state;
+
+    trace(`created document id  ${documentId}`);
     const idValue = docId || documentId + 1;
+    trace(`updated document id ${docId}`);
 
     documents.push({ value: data, name: docName, id: idValue });
-    this.setState({ documents, documentId: documentId + 1, fileError: false });
+    const stateObj = docId
+      ? { documents, fileError: false }
+      : { documents, documentId: documentId + 1, fileError: false };
+    this.setState(stateObj);
   };
 
   onBatchClick = () => {
@@ -75,7 +85,7 @@ class DropzoneContainer extends Component {
       });
       this.setState({ signedDoc, creatingDocument: false });
     } catch (e) {
-      this.setState({ fileError: true });
+      error(e);
     }
   };
 
@@ -221,7 +231,6 @@ class DropzoneContainer extends Component {
           <PdfDropzone
             documents={groupDocuments}
             onDocumentFileChange={this.onDocumentFileChange}
-            handleFileError={this.handleFileError}
           />
         </div>
         {signedDoc.length > 0 && (

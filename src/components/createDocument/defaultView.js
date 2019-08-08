@@ -134,6 +134,9 @@ const dropzoneStyle = (
           color: #324353 !important;
         }
       }
+      .or-text {
+        line-height: 0.8;
+      }
       .row {
         display: flex;
         flex-direction: row;
@@ -182,7 +185,7 @@ const DefaultView = ({ getRootProps, getInputProps, accept }) => (
         </div>
       )}
       <div
-        className="text-brand-dark mb4"
+        className="text-brand-dark mb2"
         style={{ fontSize: "1.375rem", fontWeight: 500 }}
       >
         Drag and drop your attachments
@@ -191,7 +194,7 @@ const DefaultView = ({ getRootProps, getInputProps, accept }) => (
         <div className="col-4">
           <hr />
         </div>
-        <div className="col-2">or</div>
+        <div className="col-2 or-text">or</div>
         <div className="col-4">
           <hr />
         </div>
