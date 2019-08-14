@@ -3,14 +3,14 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 /** @jsx jsx */
 import { Global, css, jsx } from "@emotion/core";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+
 import {
   lightGrey,
   faintOrange,
   brandOrange,
   brandDarkOrange
-} from "../styles/variables";
-import { isValidAddress } from "./utils";
+} from "../../styles/variables";
+import { isValidAddress } from "../utils";
 import {
   loadAdminAddress,
   getAdminAddress,
@@ -25,16 +25,14 @@ import {
   getDeploying,
   getIssuingDocument,
   getDeployedTx
-} from "../reducers/admin";
-import { updateNetworkId, getNetworkId } from "../reducers/application";
-import StoreDeployBlock from "./StoreDeployBlock";
-import StoreIssueBlock from "./StoreIssueBlock";
-import StoreRevokeBlock from "./StoreRevokeBlock";
-import HashColor from "./UI/HashColor";
-import HashColorInput from "./UI/HashColorInput";
-import Panel from "./UI/Panel";
-import NetworkSelectorContainer from "./NetworkSelectorContainer";
-import ErrorPage from "./ErrorPage";
+} from "../../reducers/admin";
+import { updateNetworkId, getNetworkId } from "../../reducers/application";
+import HashColor from "../UI/HashColor";
+import HashColorInput from "../UI/HashColorInput";
+import Panel from "../UI/Panel";
+import NetworkSelectorContainer from "../NetworkSelectorContainer";
+import ErrorPage from "../ErrorPage";
+import AdminBlocks from "./adminBlocks";
 
 const baseStyle = (
   <Global
@@ -125,17 +123,7 @@ class AdminContainer extends Component {
   }
 
   render() {
-    const {
-      adminAddress,
-      storeAddress,
-      issuingDocument,
-      issuedTx,
-      revokingDocument,
-      revokedTx,
-      networkId,
-      deploying,
-      deployedTx
-    } = this.props;
+    const { adminAddress, networkId } = this.props;
 
     return (
       <React.Fragment>
@@ -183,59 +171,12 @@ class AdminContainer extends Component {
                 />
               </div>
             </div>
-            <Tabs className="flex flex-row w-100">
-              <TabList className="flex flex-column w-30 list pa0">
-                <Tab className="tab pl3">
-                  <h3>Deploy new instance</h3>
-                </Tab>
-                <Tab className="tab pl3">
-                  <h3>Issue document batch</h3>
-                </Tab>
-                <Tab className="tab pl3">
-                  <h3>Revoke document</h3>
-                </Tab>
-              </TabList>
-              <div className="w-70 pa4 pl5">
-                <TabPanel>
-                  <StoreDeployBlock
-                    adminAddress={adminAddress}
-                    storeAddress={storeAddress}
-                    handleStoreDeploy={this.handleStoreDeploy}
-                    deploying={deploying}
-                    networkId={networkId}
-                    deployedTx={deployedTx}
-                  />
-                </TabPanel>
-                <TabPanel>
-                  {storeAddress ? (
-                    <StoreIssueBlock
-                      networkId={networkId}
-                      issuedTx={issuedTx}
-                      adminAddress={adminAddress}
-                      storeAddress={storeAddress}
-                      handleDocumentIssue={this.handleDocumentIssue}
-                      issuingDocument={issuingDocument}
-                    />
-                  ) : (
-                    <div className="red">Enter a store address first.</div>
-                  )}
-                </TabPanel>
-                <TabPanel>
-                  {storeAddress ? (
-                    <StoreRevokeBlock
-                      networkId={networkId}
-                      revokingDocument={revokingDocument}
-                      revokedTx={revokedTx}
-                      adminAddress={adminAddress}
-                      storeAddress={storeAddress}
-                      handleDocumentRevoke={this.handleDocumentRevoke}
-                    />
-                  ) : (
-                    <div className="red">Enter a store address first.</div>
-                  )}
-                </TabPanel>
-              </div>
-            </Tabs>
+            <AdminBlocks
+              handleStoreDeploy={this.handleStoreDeploy}
+              handleDocumentIssue={this.handleDocumentIssue}
+              handleDocumentRevoke={this.handleDocumentRevoke}
+              {...this.props}
+            />
           </Panel>
         ) : (
           <ErrorPage />
