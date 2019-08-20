@@ -1,7 +1,7 @@
 import { Component } from "react";
 import PropTypes from "prop-types";
 import { issueDocuments } from "@govtechsg/tradetrust-schema";
-import { groupBy, get } from "lodash";
+import { groupBy, get, remove } from "lodash";
 
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
@@ -147,6 +147,12 @@ class DropzoneContainer extends Component {
     });
   };
 
+  deleteJsonDocument = (docId) => {
+    const documents = JSON.parse(JSON.stringify(this.state.documents));
+    remove(documents, d => d.id == docId);
+    this.setState({documents})
+  }
+
   render() {
     const {
       creatingDocument,
@@ -218,6 +224,7 @@ class DropzoneContainer extends Component {
             <PdfDropzone
               documents={groupDocuments}
               onDocumentFileChange={this.onDocumentFileChange}
+              deleteJsonDocument={this.deleteJsonDocument}
             />
           </div>
           {signedDoc.length > 0 && (

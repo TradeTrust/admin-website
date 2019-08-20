@@ -35,7 +35,11 @@ const PdfDropzone = props => (
         {idx === 0 && (
           <h3>Drag and drop more pdf files to add to the document</h3>
         )}
-        <li className="mb4">{`Doc-${docId}.json`}</li>
+        <li className="mb4">{`Doc-${docId}.json`} 
+        <a onClick={() => props.deleteJsonDocument(docId)}><i class="fas fa-times" 
+          style={{color: "darkred", marginLeft: 16}} >
+        </i></a>
+        </li>
         <Dropzone
           id="pdf-dropzone"
           key={idx}
@@ -63,5 +67,6 @@ export default PdfDropzone;
 PdfDropzone.propTypes = {
   onDocumentFileChange: PropTypes.func,
   handleFileError: PropTypes.func,
+  deleteJsonDocument: PropTypes.func,
   documents: PropTypes.object
 };
