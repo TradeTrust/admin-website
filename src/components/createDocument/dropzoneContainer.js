@@ -6,6 +6,7 @@ import { groupBy, get } from "lodash";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 
+import HashColor from "../UI/HashColor";
 import DocumentDropzone from "./documentDropzone";
 import PdfDropzone from "./pdfDropzone";
 import { OrangeButton } from "../UI/Button";
@@ -34,7 +35,6 @@ class DropzoneContainer extends Component {
     this.state = {
       issuerName: "",
       documentStore: "",
-      orgUrl: "",
       formError: false,
       fileError: false,
       documentId: 0,
@@ -64,12 +64,11 @@ class DropzoneContainer extends Component {
 
   onBatchClick = () => {
     try {
-      const { documents, issuerName, documentStore, orgUrl } = this.state;
+      const { documents, issuerName, documentStore } = this.state;
       if (
         !issuerName ||
         !documentStore ||
         !isValidAddress(documentStore) ||
-        !orgUrl ||
         documents.length === 0
       ) {
         this.setState({ formError: true });
@@ -80,7 +79,7 @@ class DropzoneContainer extends Component {
       const metaObj = {
         name: issuerName,
         documentStore,
-        identityProof: { type: "DNS-TXT", location: orgUrl }
+        identityProof: { type: "DNS-TXT", location: "stanchart.tradetrust.io" }
       };
       baseDoc.issuers.push(metaObj);
 
@@ -141,7 +140,6 @@ class DropzoneContainer extends Component {
   onIssueClick = () => {
     const { adminAddress, handleDocumentIssue } = this.props;
     const { documentStore, signedDoc } = this.state;
-
     const documentHash = `0x${get(signedDoc, "[0].signature.merkleRoot")}`;
     handleDocumentIssue({
       storeAddress: documentStore,
@@ -156,12 +154,12 @@ class DropzoneContainer extends Component {
       issuingDocument,
       issuerName,
       documentStore,
-      orgUrl,
       documents,
       signedDoc,
       formError,
       fileError
     } = this.state;
+    const { issuedTx, networkId } = this.props;
     const groupDocuments = groupBy(documents, "id");
     return (
       <>
@@ -205,23 +203,6 @@ class DropzoneContainer extends Component {
             />
           </div>
           <div className="mb4">
-            Organization Url
-            <br />
-            <Input
-              id="orgUrl"
-              className="mt2"
-              name="orgUrl"
-              variant="pill"
-              type="text"
-              placeholder="Url of the organization"
-              onChange={this.onInputFieldChange}
-              value={orgUrl}
-              message={this.getErrorMessage(formError, orgUrl)}
-              size={50}
-              required
-            />
-          </div>
-          <div className="mb4">
             <h3> Drag and drop pdf file to create new document</h3>
             <br />
             <DocumentDropzone
@@ -246,6 +227,15 @@ class DropzoneContainer extends Component {
               <DocumentList signedDocuments={signedDoc} />
             </div>
           )}
+          {issuedTx && !issuingDocument ? (
+            <div className="mt5">
+              <p>🎉 Batch has been issued.</p>
+              <div>
+                Transaction ID{" "}
+                <HashColor hashee={issuedTx} networkId={networkId} isTx />
+              </div>
+            </div>
+          ) : null}
           <OrangeButton
             variant="pill"
             className="mt4"
@@ -272,5 +262,7 @@ export default DropzoneContainer;
 
 DropzoneContainer.propTypes = {
   adminAddress: PropTypes.string,
-  handleDocumentIssue: PropTypes.func
+  handleDocumentIssue: PropTypes.func,
+  issuedTx: PropTypes.string,
+  networkId: PropTypes.number
 };

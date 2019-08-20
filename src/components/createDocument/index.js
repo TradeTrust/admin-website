@@ -6,7 +6,8 @@ import {
   loadAdminAddress,
   getAdminAddress,
   issueDocument,
-  getIssuingDocument
+  getIssuingDocument,
+  getIssuedTx
 } from "../../reducers/admin";
 import { updateNetworkId, getNetworkId } from "../../reducers/application";
 
@@ -21,10 +22,12 @@ class CreateDocumentView extends Component {
   handleDocumentIssue = payload => this.props.issueDocument(payload);
 
   render() {
-    const { adminAddress } = this.props;
+    const { adminAddress, issuedTx, networkId } = this.props;
     return (
       <DropzoneContainer
         adminAddress={adminAddress}
+        issuedTx={issuedTx}
+        networkId={networkId}
         handleDocumentIssue={this.handleDocumentIssue}
       />
     );
@@ -34,6 +37,7 @@ class CreateDocumentView extends Component {
 const mapStateToProps = store => ({
   adminAddress: getAdminAddress(store),
   networkId: getNetworkId(store),
+  issuedTx: getIssuedTx(store),
   issuingDocument: getIssuingDocument(store)
 });
 
@@ -52,6 +56,7 @@ CreateDocumentView.propTypes = {
   adminAddress: PropTypes.string,
   storeAddress: PropTypes.string,
   networkId: PropTypes.number,
+  issuedTx: PropTypes.string,
   updateNetworkId: PropTypes.func,
   loadAdminAddress: PropTypes.func,
   issueDocument: PropTypes.func
