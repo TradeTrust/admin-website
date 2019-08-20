@@ -49,12 +49,7 @@ class DropzoneContainer extends Component {
 
   onBatchClick = () => {
     try {
-      const {
-        documents,
-        issuerName,
-        documentStore,
-        orgUrl
-      } = this.state;
+      const { documents, issuerName, documentStore, orgUrl } = this.state;
       if (
         !issuerName ||
         !documentStore ||
@@ -75,9 +70,9 @@ class DropzoneContainer extends Component {
       baseDoc.issuers.push(metaObj);
 
       const groupDocuments = groupBy(documents, "id");
-      const unSignedData = Object.keys(groupDocuments).map(docId => {
-        return this.batchPdf(baseDoc, groupDocuments[docId]);
-      });
+      const unSignedData = Object.keys(groupDocuments).map(docId =>
+        this.batchPdf(baseDoc, groupDocuments[docId])
+      );
       const signedDoc = this.issueDocuments(unSignedData);
       this.setState({ signedDoc, creatingDocument: false });
     } catch (e) {
