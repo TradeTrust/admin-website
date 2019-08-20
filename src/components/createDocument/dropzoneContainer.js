@@ -40,7 +40,6 @@ class DropzoneContainer extends Component {
       documentId: 0,
       documents: [],
       creatingDocument: false,
-      issuingDocument: false,
       signedDoc: []
     };
   }
@@ -151,7 +150,6 @@ class DropzoneContainer extends Component {
   render() {
     const {
       creatingDocument,
-      issuingDocument,
       issuerName,
       documentStore,
       documents,
@@ -159,7 +157,7 @@ class DropzoneContainer extends Component {
       formError,
       fileError
     } = this.state;
-    const { issuedTx, networkId } = this.props;
+    const { issuedTx, networkId, issuingDocument } = this.props;
     const groupDocuments = groupBy(documents, "id");
     return (
       <>
@@ -236,22 +234,24 @@ class DropzoneContainer extends Component {
               </div>
             </div>
           ) : null}
-          <OrangeButton
-            variant="pill"
-            className="mt4"
-            onClick={this.onBatchClick}
-            disabled={creatingDocument}
-          >
-            {creatingDocument ? "Creating..." : "Create Document"}
-          </OrangeButton>
-          <OrangeButton
-            variant="pill"
-            className="mt4"
-            onClick={this.onIssueClick}
-            disabled={issuingDocument && signedDoc.length > 0}
-          >
-            {issuingDocument ? "Issuing…" : "Issue Document"}
-          </OrangeButton>
+          <div style={{ textAlign: "center" }}>
+            <OrangeButton
+              variant="pill"
+              className="mt4"
+              onClick={this.onBatchClick}
+              disabled={creatingDocument}
+            >
+              {creatingDocument ? "Creating..." : "Create Document"}
+            </OrangeButton>
+            <OrangeButton
+              variant="pill"
+              className="mt4"
+              onClick={this.onIssueClick}
+              disabled={issuingDocument || signedDoc.length === 0}
+            >
+              {issuingDocument ? "Issuing…" : "Issue Document"}
+            </OrangeButton>
+          </div>
         </div>
       </>
     );
@@ -264,5 +264,6 @@ DropzoneContainer.propTypes = {
   adminAddress: PropTypes.string,
   handleDocumentIssue: PropTypes.func,
   issuedTx: PropTypes.string,
-  networkId: PropTypes.number
+  networkId: PropTypes.number,
+  issuingDocument: PropTypes.bool
 };

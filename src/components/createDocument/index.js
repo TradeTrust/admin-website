@@ -22,12 +22,13 @@ class CreateDocumentView extends Component {
   handleDocumentIssue = payload => this.props.issueDocument(payload);
 
   render() {
-    const { adminAddress, issuedTx, networkId } = this.props;
+    const { adminAddress, issuedTx, networkId, issuingDocument } = this.props;
     return (
       <DropzoneContainer
         adminAddress={adminAddress}
         issuedTx={issuedTx}
         networkId={networkId}
+        issuingDocument={issuingDocument}
         handleDocumentIssue={this.handleDocumentIssue}
       />
     );
@@ -59,5 +60,6 @@ CreateDocumentView.propTypes = {
   issuedTx: PropTypes.string,
   updateNetworkId: PropTypes.func,
   loadAdminAddress: PropTypes.func,
-  issueDocument: PropTypes.func
+  issueDocument: PropTypes.func,
+  issuingDocument: PropTypes.bool
 };
