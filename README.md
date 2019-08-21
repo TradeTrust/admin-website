@@ -12,8 +12,8 @@ See also:
 
 ```bash
 npm
-npm dev
-npm lint
+npm run dev
+npm run lint
 
 npm run start # serves the ui
 ```
