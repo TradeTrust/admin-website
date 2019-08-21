@@ -11,11 +11,11 @@ See also:
 ## Development
 
 ```bash
-yarn
-yarn dev
-yarn lint
+npm
+npm dev
+npm lint
 
-yarn start # serves the ui
+npm run start # serves the ui
 ```
 
 ### Setting up web3
