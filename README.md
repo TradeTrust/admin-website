@@ -11,7 +11,7 @@ See also:
 ## Development
 
 ```bash
-npm
+npm install
 npm run dev
 npm run lint
 
