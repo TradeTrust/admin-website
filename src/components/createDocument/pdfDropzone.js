@@ -1,25 +1,27 @@
 import PropTypes from "prop-types";
 import Dropzone from "react-dropzone";
 import PdfDropzoneView from "./pdfDropzoneView";
+import { isValidFileExtension } from "../utils";
 
-const onDocumentDrop = (
-  acceptedFiles,
-  docId,
-  handleDocumentChange,
-  handleFileError
-) => {
+import { getLogger } from "../../logger";
+
+const { trace, error } = getLogger("services:dropzoneContainer");
+
+const onDocumentDrop = (acceptedFiles, docId, handleDocumentChange) => {
   // eslint-disable-next-line no-undef
   const reader = new FileReader();
   if (reader.error) {
-    handleFileError(reader.error);
+    error(reader.error);
   }
   reader.onload = () => {
     try {
       const base64String = reader.result;
       const fileName = acceptedFiles[0].name;
+      if (!isValidFileExtension(fileName)) throw new Error("Invalid File Type");
+      trace(`pdf file name: ${fileName}`);
       handleDocumentChange(base64String, fileName, docId);
     } catch (e) {
-      console.log(e);
+      error(e);
     }
   };
   if (acceptedFiles && acceptedFiles.length && acceptedFiles.length > 0)
@@ -29,29 +31,29 @@ const onDocumentDrop = (
 const PdfDropzone = props => (
   <>
     {Object.keys(props.documents).map((docId, idx) => (
-      <Dropzone
-        id="pdf-dropzone"
-        key={idx}
-        onDrop={acceptedFiles =>
-          onDocumentDrop(
-            acceptedFiles,
-            docId,
-            props.onDocumentFileChange,
-            props.handleFileError
-          )
-        }
-      >
-        {({ getRootProps, getInputProps }) => (
-          <>
-            <PdfDropzoneView
-              accept={true}
-              documents={props.documents[docId]}
-              getRootProps={getRootProps}
-              getInputProps={getInputProps}
-            />
-          </>
+      <div key={idx}>
+        {idx === 0 && (
+          <h3>Drag and drop more pdf files to add to the document</h3>
         )}
-      </Dropzone>
+        <li className="mb4">{`Doc-${docId}.json`}</li>
+        <Dropzone
+          id="pdf-dropzone"
+          key={idx}
+          onDrop={acceptedFiles =>
+            onDocumentDrop(acceptedFiles, docId, props.onDocumentFileChange)
+          }
+        >
+          {({ getRootProps, getInputProps }) => (
+            <>
+              <PdfDropzoneView
+                documents={props.documents[docId]}
+                getRootProps={getRootProps}
+                getInputProps={getInputProps}
+              />
+            </>
+          )}
+        </Dropzone>
+      </div>
     ))}
   </>
 );
