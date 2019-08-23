@@ -16,7 +16,7 @@ export const createBaseDocument = () => ({
   $template: {
     name: "NULL",
     type: "EMBEDDED_RENDERER",
-    url: ""
+    url: "stanchart.tradetrust.io/renderer"
   },
   issuers: []
 });
