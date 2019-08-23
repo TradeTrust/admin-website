@@ -214,12 +214,6 @@ class DropzoneContainer extends Component {
               </small>
             )}
           </div>
-          <div className="mb4">
-            <PdfDropzone
-              documents={groupDocuments}
-              onDocumentFileChange={this.onDocumentFileChange}
-            />
-          </div>
           {signedDoc.length > 0 && (
             <div style={{ display: "flex" }}>
               <DocumentList signedDocuments={signedDoc} />
@@ -251,6 +245,12 @@ class DropzoneContainer extends Component {
             >
               {issuingDocument ? "Issuing…" : "Issue Document"}
             </OrangeButton>
+          </div>
+          <div className="mb4">
+            <PdfDropzone
+              documents={groupDocuments}
+              onDocumentFileChange={this.onDocumentFileChange}
+            />
           </div>
         </div>
       </>
