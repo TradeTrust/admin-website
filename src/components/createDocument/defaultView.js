@@ -75,7 +75,7 @@ const dropzoneStyle = (
       .image-container {
         margin-bottom: 1rem;
         img {
-          height: 110px;
+          height: 70px;
         }
       }
 
@@ -134,6 +134,9 @@ const dropzoneStyle = (
           color: #324353 !important;
         }
       }
+      .or-text {
+        line-height: 0.8;
+      }
       .row {
         display: flex;
         flex-direction: row;
@@ -157,13 +160,13 @@ const dropzoneStyle = (
   />
 );
 
-const DefaultView = ({ getRootProps, getInputProps, hover, accept }) => (
+const DefaultView = ({ getRootProps, getInputProps, accept }) => (
   <>
     {dropzoneStyle}
     <div
       className={`viewer-container ${
         // eslint-disable-next-line no-nested-ternary
-        hover ? (accept ? "accept" : "invalid") : "default"
+        accept ? "default" : "invalid"
       }`}
       style={{ borderRadius: 10 }}
       {...getRootProps()}
@@ -178,21 +181,20 @@ const DefaultView = ({ getRootProps, getInputProps, hover, accept }) => (
       </div>
       {accept ? null : (
         <div>
-          File cannot be read. Please check that you have a valid .tt or .json
-          file
+          File cannot be read. Please check that you have a valid .pdf file
         </div>
       )}
       <div
-        className="text-brand-dark mb4"
+        className="text-brand-dark mb2"
         style={{ fontSize: "1.375rem", fontWeight: 500 }}
       >
-        Drag and drop your raw json file
+        Drag and drop your attachments
       </div>
       <div className="text-muted row mb2">
         <div className="col-4">
           <hr />
         </div>
-        <div className="col-2">or</div>
+        <div className="col-2 or-text">or</div>
         <div className="col-4">
           <hr />
         </div>
