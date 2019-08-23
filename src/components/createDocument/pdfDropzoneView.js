@@ -19,19 +19,13 @@ const dropzoneStyle = (
           border: 2px dashed #0099cc;
           box-shadow: 0 0 0px 10px #f5f8fb;
         }
-
-        &.accept {
-          background-color: green;
-          border: 2px dashed blue;
-          box-shadow: 0 0 0px 10px green;
-        }
       }
 
       .img-container {
         margin-bottom: 1rem;
         display: flex;
         img {
-          height: 70px;
+          height: 50px;
           float: left;
           margin: 5px;
         }
@@ -50,50 +44,32 @@ const dropzoneStyle = (
   />
 );
 
-const PdfDropzoneView = ({ getRootProps, getInputProps, hover, accept }) => (
+const renderPdf = (document, idx) => (
+  <div key={idx} className="pdf-container">
+    <img
+      alt=".tradetrust Dropzone"
+      src="/static/images/dropzone/pdf_file.svg"
+    />
+    <span style={{ fontSize: 12 }}>{document.name}</span>
+  </div>
+);
+
+const PdfDropzoneView = ({ getRootProps, getInputProps, documents }) => (
   <>
     {dropzoneStyle}
     <div
-      className={`viewer-container mb4 ${
-        // eslint-disable-next-line no-nested-ternary
-        hover ? (accept ? "accept" : "invalid") : "default"
-      }`}
+      className={`viewer-container mb4  default`}
       style={{ borderRadius: 10 }}
       {...getRootProps()}
     >
-      {accept ? null : (
-        <div>
-          File cannot be read. Please check that you have a valid .json file
-        </div>
-      )}
       <div
         className="text-brand-dark"
         style={{ fontSize: "1.375rem", fontWeight: 500 }}
       >
-        Drag and drop your pdf file
+        Drag and drop pdf files
       </div>
       <div className="img-container">
-        <div className="pdf-container">
-          <img
-            alt=".tradetrust Dropzone"
-            src="/static/images/dropzone/pdf_file.svg"
-          />
-          <span>ABC.pdf</span>
-        </div>
-        <div className="pdf-container">
-          <img
-            alt=".tradetrust Dropzone"
-            src="/static/images/dropzone/pdf_file.svg"
-          />
-          <span>Demo_govtech pdf and tradetrust.pdf</span>
-        </div>
-        <div className="pdf-container">
-          <img
-            alt=".tradetrust Dropzone"
-            src="/static/images/dropzone/pdf_file.svg"
-          />
-          <span>Demo_govtech pdf and tradetrust.pdf</span>
-        </div>
+        {documents.map((doc, idx) => renderPdf(doc, idx))}
       </div>
       <div className="text-muted row">
         <div className="mx-auto">
@@ -107,8 +83,7 @@ const PdfDropzoneView = ({ getRootProps, getInputProps, hover, accept }) => (
 export default PdfDropzoneView;
 
 PdfDropzoneView.propTypes = {
-  hover: PropTypes.bool,
-  accept: PropTypes.bool,
+  documents: PropTypes.array,
   getRootProps: PropTypes.func,
   getInputProps: PropTypes.func
 };

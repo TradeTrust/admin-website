@@ -4,13 +4,11 @@ import PropTypes from "prop-types";
 import StoreDeployBlock from "../StoreDeployBlock";
 import StoreIssueBlock from "../StoreIssueBlock";
 import StoreRevokeBlock from "../StoreRevokeBlock";
-import DropzoneContainer from "../createDocument/dropzoneContainer";
 
 const AdminBlocks = ({
   handleStoreDeploy,
   handleDocumentIssue,
   handleDocumentRevoke,
-  handleDocumentBatch,
   adminAddress,
   storeAddress,
   issuingDocument,
@@ -31,9 +29,6 @@ const AdminBlocks = ({
       </Tab>
       <Tab className="tab pl3">
         <h3>Revoke document</h3>
-      </Tab>
-      <Tab className="tab pl3">
-        <h3>Batch document</h3>
       </Tab>
     </TabList>
     <div className="w-70 pa4 pl5">
@@ -75,9 +70,6 @@ const AdminBlocks = ({
           <div className="red">Enter a store address first.</div>
         )}
       </TabPanel>
-      <TabPanel>
-        <DropzoneContainer handleDocumentBatch={handleDocumentBatch} />
-      </TabPanel>
     </div>
   </Tabs>
 );
@@ -96,6 +88,5 @@ AdminBlocks.propTypes = {
   networkId: PropTypes.number,
   handleStoreDeploy: PropTypes.func,
   handleDocumentIssue: PropTypes.func,
-  handleDocumentRevoke: PropTypes.func,
-  handleDocumentBatch: PropTypes.func
+  handleDocumentRevoke: PropTypes.func
 };

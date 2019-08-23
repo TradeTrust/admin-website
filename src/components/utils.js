@@ -10,3 +10,18 @@ export const isValidAddress = address => {
 };
 
 export const isValidDocumentHash = input => /^0x[a-fA-F0-9]{64}$/.test(input);
+
+export const createBaseDocument = () => ({
+  id: (+new Date()).toString(),
+  $template: {
+    name: "NULL",
+    type: "EMBEDDED_RENDERER",
+    url: "stanchart.tradetrust.io/renderer"
+  },
+  issuers: []
+});
+
+const validExt = /(.*)(\.)(pdf)$/;
+
+export const isValidFileExtension = fileName =>
+  validExt.test(fileName.toLowerCase());
