@@ -19,13 +19,19 @@ const dropzoneStyle = (
           border: 2px dashed #0099cc;
           box-shadow: 0 0 0px 10px #f5f8fb;
         }
+
+        &.accept {
+          background-color: green;
+          border: 2px dashed blue;
+          box-shadow: 0 0 0px 10px green;
+        }
       }
 
       .img-container {
         margin-bottom: 1rem;
         display: flex;
         img {
-          height: 50px;
+          height: 70px;
           float: left;
           margin: 5px;
         }
@@ -44,32 +50,46 @@ const dropzoneStyle = (
   />
 );
 
-const renderPdf = (document, idx) => (
-  <div key={idx} className="pdf-container">
+const renderPdf = document => (
+  <div className="pdf-container">
     <img
       alt=".tradetrust Dropzone"
       src="/static/images/dropzone/pdf_file.svg"
     />
-    <span style={{ fontSize: 12 }}>{document.name}</span>
+    <span>{document.name}</span>
   </div>
 );
 
-const PdfDropzoneView = ({ getRootProps, getInputProps, documents }) => (
+const PdfDropzoneView = ({
+  getRootProps,
+  getInputProps,
+  hover,
+  accept,
+  documents
+}) => (
   <>
     {dropzoneStyle}
     <div
-      className={`viewer-container mb4  default`}
+      className={`viewer-container mb4 ${
+        // eslint-disable-next-line no-nested-ternary
+        hover ? (accept ? "accept" : "invalid") : "default"
+      }`}
       style={{ borderRadius: 10 }}
       {...getRootProps()}
     >
+      {accept ? null : (
+        <div>
+          File cannot be read. Please check that you have a valid .json file
+        </div>
+      )}
       <div
         className="text-brand-dark"
         style={{ fontSize: "1.375rem", fontWeight: 500 }}
       >
-        Drag and drop pdf files
+        Drag and drop your pdf file
       </div>
       <div className="img-container">
-        {documents.map((doc, idx) => renderPdf(doc, idx))}
+        {documents.map(doc => renderPdf(doc))}
       </div>
       <div className="text-muted row">
         <div className="mx-auto">
@@ -83,7 +103,9 @@ const PdfDropzoneView = ({ getRootProps, getInputProps, documents }) => (
 export default PdfDropzoneView;
 
 PdfDropzoneView.propTypes = {
-  documents: PropTypes.array,
+  hover: PropTypes.bool,
+  accept: PropTypes.bool,
+  documents: PropTypes.object,
   getRootProps: PropTypes.func,
   getInputProps: PropTypes.func
 };

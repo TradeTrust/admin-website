@@ -16,12 +16,7 @@ export const createBaseDocument = () => ({
   $template: {
     name: "NULL",
     type: "EMBEDDED_RENDERER",
-    url: "stanchart.tradetrust.io/renderer"
+    url: ""
   },
   issuers: []
 });
-
-const validExt = /(.*)(\.)(pdf)$/;
-
-export const isValidFileExtension = fileName =>
-  validExt.test(fileName.toLowerCase());

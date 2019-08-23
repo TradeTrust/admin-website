@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import Dropzone from "react-dropzone";
 import DefaultView from "./defaultView";
-import { isValidFileExtension } from "../utils";
 
 const onFileDrop = (acceptedFiles, onDocumentFileChange, handleFileError) => {
   // eslint-disable-next-line no-undef
@@ -13,10 +12,9 @@ const onFileDrop = (acceptedFiles, onDocumentFileChange, handleFileError) => {
     try {
       const base64String = reader.result;
       const fileName = acceptedFiles[0].name;
-      if (!isValidFileExtension(fileName)) throw new Error("Invalid File Type");
       onDocumentFileChange(base64String, fileName);
     } catch (e) {
-      handleFileError(e);
+      console.log(e);
     }
   };
   if (acceptedFiles && acceptedFiles.length && acceptedFiles.length > 0)
@@ -37,7 +35,7 @@ const DocumentDropzone = props => (
   >
     {({ getRootProps, getInputProps }) => (
       <DefaultView
-        accept={!props.error}
+        accept={true}
         getRootProps={getRootProps}
         getInputProps={getInputProps}
       />
@@ -49,6 +47,5 @@ export default DocumentDropzone;
 
 DocumentDropzone.propTypes = {
   onDocumentFileChange: PropTypes.func,
-  handleFileError: PropTypes.func,
-  error: PropTypes.bool
+  handleFileError: PropTypes.func
 };
