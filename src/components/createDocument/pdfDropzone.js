@@ -15,7 +15,7 @@ const onDocumentDrop = (acceptedFiles, docId, handleDocumentChange) => {
   }
   reader.onload = () => {
     try {
-      const base64String = reader.result;
+      const base64String = reader.result.split(",")[1];
       const fileName = acceptedFiles[0].name;
       if (!isValidFileExtension(fileName)) throw new Error("Invalid File Type");
       trace(`pdf file name: ${fileName}`);
