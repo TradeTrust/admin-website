@@ -14,6 +14,7 @@ import Input from "../UI/Input";
 import { createBaseDocument, isValidAddress } from "../utils";
 import DocumentList from "./documentList";
 import { invalidColor } from "../../styles/variables";
+import Dropdown from "../UI/Dropdown";
 
 import { getLogger } from "../../logger";
 
@@ -168,47 +169,53 @@ class DropzoneContainer extends Component {
     return (
       <>
         <div css={css(formStyle)}>
-          <div className="mb2">
-            Issuer Name
-            <br />
-            <Input
-              id="issuer"
-              className="mt2"
-              name="issuerName"
-              variant="pill"
-              type="text"
-              placeholder="Name of organization"
-              onChange={this.onInputFieldChange}
-              value={issuerName}
-              message={this.getErrorMessage(formError, issuerName)}
-              size={50}
-              required
-            />
+        <div className="flex flex-row w-100 mb4">
+          <div className="fl w-70">
+            <div className="mb4">
+              <div className="fl w-30">
+                Issuer Name
+            </div>
+              <div className="fl w-70 mb4">
+                <Dropdown options={[{ label: "hellow", value: 2 }, { label: "lets eseee", value: 3 }]} value={2} handleChange={this.onInputFieldChange} />
+              </div>
+            </div>
+            <div className="mb2">
+              <div className="fl w-30">
+                Document Store
+              </div>
+              <div className="fr fl w-70">
+                <Input
+                  id="store"
+                  className="fr ba b--light-blue"
+                  name="documentStore"
+                  variant="rounded"
+                  type="text"
+                  borderColor="#96ccff"
+                  placeholder="Enter ethereum address"
+                  onChange={this.onInputFieldChange}
+                  value={documentStore}
+                  message={this.getErrorMessage(
+                    formError,
+                    documentStore,
+                    "documentStore"
+                  )}
+                  size={50}
+                  required
+                />
+              </div>
+            </div>
           </div>
-          <div className="mb2">
-            Document Store
-            <br />
-            <Input
-              id="store"
-              className="mt2"
-              name="documentStore"
-              variant="pill"
-              type="text"
-              placeholder="Enter ethereum address"
-              onChange={this.onInputFieldChange}
-              value={documentStore}
-              message={this.getErrorMessage(
-                formError,
-                documentStore,
-                "documentStore"
-              )}
-              size={50}
-              required
-            />
+          <div className="fl w-30 mr2">
+            <OrangeButton
+              variant="rounded"
+              onClick={this.onIssueClick}
+              disabled={issuingDocument || signedDoc.length === 0}
+            >
+              {issuingDocument ? "Issuing…" : "Issue All Documents"}
+            </OrangeButton>
           </div>
+        </div>
           <div className="mb4">
-            <h3> Drag and drop pdf file to create new document</h3>
-            <br />
             <DocumentDropzone
               onDocumentFileChange={this.onDocumentFileChange}
               error={fileError}
@@ -234,7 +241,7 @@ class DropzoneContainer extends Component {
               </div>
             </div>
           ) : null}
-          <div style={{ textAlign: "center" }}>
+          {/* <div style={{ textAlign: "center" }}>
             <OrangeButton
               variant="pill"
               className="mt4"
@@ -243,15 +250,8 @@ class DropzoneContainer extends Component {
             >
               {creatingDocument ? "Creating..." : "Create Document"}
             </OrangeButton>
-            <OrangeButton
-              variant="pill"
-              className="mt4"
-              onClick={this.onIssueClick}
-              disabled={issuingDocument || signedDoc.length === 0}
-            >
-              {issuingDocument ? "Issuing…" : "Issue Document"}
-            </OrangeButton>
-          </div>
+
+          </div> */}
           <div className="mb4">
             <PdfDropzone
               documents={groupDocuments}

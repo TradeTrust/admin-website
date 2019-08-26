@@ -26,6 +26,7 @@ const Input = ({
   onChange,
   value,
   message,
+  borderColor,
   ...rest
 }) => (
   <React.Fragment>
@@ -38,7 +39,7 @@ const Input = ({
       )}
       variant={variant}
       type={type}
-      style={{ borderColor: message ? invalidColor : black }}
+      style={{ borderColor: message ? invalidColor : borderColor ? borderColor : black }}
       onChange={onChange}
       value={value}
       size={50}
@@ -59,5 +60,6 @@ Input.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.string,
   variant: PropTypes.string,
-  type: PropTypes.string
+  type: PropTypes.string,
+  borderColor: PropTypes.string
 };
