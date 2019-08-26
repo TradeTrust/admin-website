@@ -11,7 +11,7 @@ const onFileDrop = (acceptedFiles, onDocumentFileChange, handleFileError) => {
   }
   reader.onload = () => {
     try {
-      const base64String = reader.result;
+      const base64String = reader.result.split(",")[1];
       const fileName = acceptedFiles[0].name;
       if (!isValidFileExtension(fileName)) throw new Error("Invalid File Type");
       onDocumentFileChange(base64String, fileName);
