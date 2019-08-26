@@ -51,7 +51,7 @@ class DropzoneContainer extends Component {
     const { documentId } = this.state;
 
     trace(`created document id  ${documentId}`);
-    const idValue = docId || documentId + 1;
+    const idValue = +docId || +documentId + 1;
     trace(`updated document id ${docId}`);
 
     documents.push({ value: data, name: docName, id: idValue });
@@ -74,23 +74,29 @@ class DropzoneContainer extends Component {
         return;
       }
       this.setState({ creatingDocument: true, formError: false });
-      const baseDoc = createBaseDocument();
-      const metaObj = {
-        name: issuerName,
-        documentStore,
-        identityProof: { type: "DNS-TXT", location: "stanchart.tradetrust.io" }
-      };
-      baseDoc.issuers.push(metaObj);
 
       const groupDocuments = groupBy(documents, "id");
-      const unSignedData = Object.keys(groupDocuments).map(docId =>
-        this.batchPdf(baseDoc, groupDocuments[docId])
-      );
+      const unSignedData = Object.keys(groupDocuments).map(docId => {
+        const baseDoc = this.generateBaseDoc();
+        return this.batchPdf(baseDoc, groupDocuments[docId]);
+      });
       const signedDoc = this.issueDocuments(unSignedData);
       this.setState({ signedDoc, creatingDocument: false });
     } catch (e) {
       error(e);
     }
+  };
+
+  generateBaseDoc = () => {
+    const { issuerName, documentStore } = this.state;
+    const baseDoc = createBaseDocument();
+    const metaObj = {
+      name: issuerName,
+      documentStore,
+      identityProof: { type: "DNS-TXT", location: "stanchart.tradetrust.io" }
+    };
+    baseDoc.issuers.push(metaObj);
+    return baseDoc;
   };
 
   batchPdf = (baseDoc, docs) => {
