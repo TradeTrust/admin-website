@@ -23,6 +23,7 @@
     "@ledgerhq/hw-transport-u2f": "4.48.0",
     "@ledgerhq/web3-subprovider": "4.48.0",
     "debug": "^4.1.1",
+    "dropbox": "^4.0.30",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "eslint-plugin-react": "^7.7.0",
@@ -42,6 +43,7 @@
     "redux-devtools-extension": "^2.13.2",
     "redux-saga": "^0.16.0",
     "truffle-contract": "^3.0.4",
+    "uuid": "^3.3.3",
     "web3": "1.2.1",
     "web3-provider-engine": "14.0.6",
     "web3-utils": "^1.0.0-beta.36"

@@ -5,13 +5,14 @@ import { groupBy, get } from "lodash";
 
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
+const uuidv4 = require('uuid/v4');
 
 import HashColor from "../UI/HashColor";
 import DocumentDropzone from "./documentDropzone";
 import PdfDropzone from "./pdfDropzone";
 import { OrangeButton } from "../UI/Button";
 import Input from "../UI/Input";
-import { createBaseDocument, isValidAddress } from "../utils";
+import { createBaseDocument, isValidAddress, uploadFile } from "../utils";
 import DocumentList from "./documentList";
 import { invalidColor } from "../../styles/variables";
 
@@ -81,7 +82,11 @@ class DropzoneContainer extends Component {
         return this.batchPdf(baseDoc, groupDocuments[docId]);
       });
       const signedDoc = this.issueDocuments(unSignedData);
-      this.setState({ signedDoc, creatingDocument: false });
+      Promise.all(signedDoc.map(doc => uploadFile(doc)))
+        .then(res => { 
+          res.filter((val, idx) => { if(!val) signedDoc.splice(idx, 1); });
+          this.setState({ signedDoc, creatingDocument: false });
+        });
     } catch (e) {
       error(e);
     }
@@ -96,6 +101,7 @@ class DropzoneContainer extends Component {
       identityProof: { type: "DNS-TXT", location: "stanchart.tradetrust.io" }
     };
     baseDoc.issuers.push(metaObj);
+    baseDoc.documentUrl = uuidv4();
     return baseDoc;
   };
 
