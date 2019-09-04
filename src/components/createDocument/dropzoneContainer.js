@@ -9,15 +9,14 @@ import { css, jsx } from "@emotion/core";
 import HashColor from "../UI/HashColor";
 import DocumentDropzone from "./documentDropzone";
 import PdfDropzone from "./pdfDropzone";
-import { OrangeButton } from "../UI/Button";
+import { BlueButton, CustomButton } from "../UI/Button";
 import Input from "../UI/Input";
 import { createBaseDocument, isValidAddress } from "../utils";
 import DocumentList from "./documentList";
 import { invalidColor } from "../../styles/variables";
 import Dropdown from "../UI/Dropdown";
-
 import { getLogger } from "../../logger";
-
+import { STORE_ADDR } from "./store";
 const { trace, error } = getLogger("services:dropzoneContainer");
 
 const formStyle = css`
@@ -30,15 +29,20 @@ const formStyle = css`
   padding: 3rem;
 `;
 
+const dropZoneStyle = css`
+  max-height: 300px;
+  overflow: scroll;
+`;
+
 class DropzoneContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      issuerName: "",
-      documentStore: "",
+      issuerName: STORE_ADDR[0]["label"],
+      documentStore: STORE_ADDR[0]["value"],
       formError: false,
       fileError: false,
-      documentId: 0,
+      activeDoc: 0,
       documents: [],
       creatingDocument: false,
       signedDoc: []
@@ -47,20 +51,29 @@ class DropzoneContainer extends Component {
 
   handleFileError = () => this.setState({ fileError: true });
 
-  onDocumentFileChange = (data, docName, docId = false) => {
+  createDocument = () => {
     const documents = JSON.parse(JSON.stringify(this.state.documents));
-    const { documentId } = this.state;
+    const id = new Date().getTime();
+    documents.push({id, title: "Untitled", attachments: []});
+    console.log(documents)
+    this.setState({documents, activeDoc: id});
+  }
 
-    trace(`created document id  ${documentId}`);
-    const idValue = +docId || +documentId + 1;
+  onDocumentFileChange = (data, pdfName, docId) => {
+    const documents = JSON.parse(JSON.stringify(this.state.documents));
     trace(`updated document id ${docId}`);
 
-    documents.push({ value: data, name: docName, id: idValue });
-    const stateObj = docId
-      ? { documents, fileError: false }
-      : { documents, documentId: documentId + 1, fileError: false };
-    this.setState(stateObj);
+    const index = documents.findIndex(doc =>  doc.id == docId);
+
+    documents[index].attachments.push({filename: pdfName, type: "application/pdf", data});
+
+    this.setState({documents});
   };
+
+  toggleDropzoneView = (id) => {
+    console.log(id)
+    this.setState({activeDoc: id});
+  }
 
   onBatchClick = () => {
     try {
@@ -76,13 +89,13 @@ class DropzoneContainer extends Component {
       }
       this.setState({ creatingDocument: true, formError: false });
 
-      const groupDocuments = groupBy(documents, "id");
-      const unSignedData = Object.keys(groupDocuments).map(docId => {
+      const unSignedData = documents.map(doc => {
         const baseDoc = this.generateBaseDoc();
-        return this.batchPdf(baseDoc, groupDocuments[docId]);
+        baseDoc.attachments = doc.attachments;
+        return baseDoc;
       });
       const signedDoc = this.issueDocuments(unSignedData);
-      this.setState({ signedDoc, creatingDocument: false });
+      this.onIssueClick(signedDoc);
     } catch (e) {
       error(e);
     }
@@ -100,16 +113,6 @@ class DropzoneContainer extends Component {
     return baseDoc;
   };
 
-  batchPdf = (baseDoc, docs) => {
-    const jsonDoc = baseDoc;
-    jsonDoc.attachments = docs.map(doc => ({
-      filename: doc.name,
-      type: "application/pdf",
-      data: doc.value
-    }));
-    return jsonDoc;
-  };
-
   issueDocuments = rawJson => {
     try {
       return issueDocuments(rawJson);
@@ -119,7 +122,10 @@ class DropzoneContainer extends Component {
   };
 
   onInputFieldChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    console.log(e.target.value)
+    const addrValue = STORE_ADDR.find(addr => addr.value === e.target.value);
+    console.log(addrValue)
+    this.setState({ issuerName: addrValue.label, documentStore: e.target.value });
   };
 
   getErrorMessage = (formError, fieldValue, fieldName) => {
@@ -143,15 +149,16 @@ class DropzoneContainer extends Component {
       signedDoc: []
     });
 
-  onIssueClick = () => {
+  onIssueClick = (signedDoc) => {
     const { adminAddress, handleDocumentIssue } = this.props;
-    const { documentStore, signedDoc } = this.state;
+    const { documentStore } = this.state;
     const documentHash = `0x${get(signedDoc, "[0].signature.merkleRoot")}`;
     handleDocumentIssue({
       storeAddress: documentStore,
       fromAddress: adminAddress,
       documentHash
     });
+    this.setState({ signedDoc, creatingDocument: false });
   };
 
   render() {
@@ -162,28 +169,23 @@ class DropzoneContainer extends Component {
       documents,
       signedDoc,
       formError,
-      fileError
+      fileError,
+      activeDoc
     } = this.state;
+    console.log(documents)
     const { issuedTx, networkId, issuingDocument } = this.props;
-    const groupDocuments = groupBy(documents, "id");
     return (
       <>
         <div css={css(formStyle)}>
         <div className="flex flex-row w-100 mb4">
-          <div className="fl w-70">
+          <div className="fl w-100">
             <div className="mb4">
-              <div className="fl w-30">
+              <div className="fl w-50 pr2">
                 Issuer Name
-            </div>
-              <div className="fl w-70 mb4">
-                <Dropdown options={[{ label: "hellow", value: 2 }, { label: "lets eseee", value: 3 }]} value={2} handleChange={this.onInputFieldChange} />
+                <Dropdown options={STORE_ADDR} value={documentStore} handleChange={this.onInputFieldChange} />
               </div>
-            </div>
-            <div className="mb2">
-              <div className="fl w-30">
+              <div className="fl w-50 pl2">
                 Document Store
-              </div>
-              <div className="fr fl w-70">
                 <Input
                   id="store"
                   className="fr ba b--light-blue"
@@ -192,7 +194,6 @@ class DropzoneContainer extends Component {
                   type="text"
                   borderColor="#96ccff"
                   placeholder="Enter ethereum address"
-                  onChange={this.onInputFieldChange}
                   value={documentStore}
                   message={this.getErrorMessage(
                     formError,
@@ -202,31 +203,24 @@ class DropzoneContainer extends Component {
                   size={50}
                   required
                 />
-              </div>
+            </div>
             </div>
           </div>
-          <div className="fl w-30 mr2">
-            <OrangeButton
-              variant="rounded"
-              onClick={this.onIssueClick}
-              disabled={issuingDocument || signedDoc.length === 0}
-            >
-              {issuingDocument ? "Issuing…" : "Issue All Documents"}
-            </OrangeButton>
-          </div>
         </div>
-          <div className="mb4">
-            <DocumentDropzone
+        <div className="mb4">
+        <div className="mb4">
+        For each trade transaction, create a new record. Then add the relevent files to the record.
+        </div>
+        <div className="mb4" css={css(dropZoneStyle)}>
+            <PdfDropzone
+              documents={documents}
+              activeDoc={activeDoc}
+              toggleDropzoneView={this.toggleDropzoneView}
               onDocumentFileChange={this.onDocumentFileChange}
-              error={fileError}
-              handleFileError={this.handleFileError}
             />
-            {formError && documents.length === 0 && (
-              <small style={{ color: invalidColor }}>
-                Attachments required
-              </small>
-            )}
-          </div>
+          </div>    
+        <CustomButton onClick={this.createDocument}>Click to create a new record</CustomButton>
+        </div>
           {signedDoc.length > 0 && (
             <div style={{ display: "flex" }}>
               <DocumentList signedDocuments={signedDoc} />
@@ -242,21 +236,25 @@ class DropzoneContainer extends Component {
             </div>
           ) : null}
           {/* <div style={{ textAlign: "center" }}>
-            <OrangeButton
+            <BlueButton
               variant="pill"
               className="mt4"
               onClick={this.onBatchClick}
               disabled={creatingDocument}
             >
               {creatingDocument ? "Creating..." : "Create Document"}
-            </OrangeButton>
+            </BlueButton>
 
           </div> */}
-          <div className="mb4">
-            <PdfDropzone
-              documents={groupDocuments}
-              onDocumentFileChange={this.onDocumentFileChange}
-            />
+          <div className="left-0 bottom-0 right-0 mw8-ns center mw9">
+            <BlueButton
+              variant="rounded"
+              onClick={this.onBatchClick}
+              style={{width: "100%", height: 80, fontSize: 25, fonrWeight: 600, margin: 0}}
+              disabled={creatingDocument}
+            >
+              {creatingDocument ? "Issuing…" : "Issue all records"}
+            </BlueButton>
           </div>
         </div>
       </>

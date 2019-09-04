@@ -122,6 +122,22 @@ export const BlueOutlineButton = ({ children, variant, onClick, ...rest }) => {
   );
 };
 
+export const CustomButton  = ({children, className, onClick, ...rest}) => {
+  const custom = css`
+    border-radius: 3px;
+    background: #fff;
+    border: 2px dashed #0099cc;
+    display: block;
+    width: 100%;
+    padding: 1.3rem;
+    color: #0099cc;
+    margin: 0;
+  `;
+  return <Button custom={custom} onClick={onClick} {...rest}>
+          {children}
+        </Button>
+}
+
 Button.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
@@ -169,5 +185,14 @@ BlueOutlineButton.propTypes = {
     PropTypes.node
   ]).isRequired,
   variant: PropTypes.string,
+  onClick: PropTypes.func
+};
+
+CustomButton.PropTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node
+  ]).isRequired,
+  className: PropTypes.string,
   onClick: PropTypes.func
 };
