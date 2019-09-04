@@ -15,7 +15,7 @@ const dropzoneStyle = (
     styles={css`
       .viewer-container {
         text-align: center !important;
-        height: 150px;
+        height: 175px;
         justify-content: center !important;
         flex-direction: column !important;
         display: flex !important;
@@ -41,10 +41,20 @@ const dropzoneStyle = (
         margin: 0 auto;
       }
       .pdf-container {
-        width: 100px;
+        padding: 5px;
+        background: #fff;
+        width: 150px;
         word-break: break-all;
+      }
+      .pdf-img {
         display: flex;
         flex-direction: column;
+      }
+      .delete-icon {
+        border-radius: 50%;
+        float: right;
+        width: 25px;
+        height: 25px;
       }
       .dropzone-title {
         text-align: left;
@@ -52,13 +62,8 @@ const dropzoneStyle = (
         border-bottom: 2px solid #BEEAF9;
         background-color: #E8F8FD;
         padding: 10px;
-        span {
+        span, svg {
           color: #30C8F9;
-          font-size: 20px;
-        }
-        svg {
-          color: #30C8F9;
-          font-size: 16px;
         }
       }
       .minimize {
@@ -108,7 +113,7 @@ const onDocumentDrop = (acceptedFiles, docId, handleDocumentChange) => {
     acceptedFiles.map(f => reader.readAsDataURL(f));
 };
 
-const PdfDropzone = ({documents, onDocumentFileChange, onEditTitle, updateTitle, toggleDropzoneView, activeDoc, editableDoc, error}) => (
+const PdfDropzone = ({documents, onDocumentFileChange, onEditTitle, updateTitle, toggleDropzoneView, deletePdf, activeDoc, editableDoc, error}) => (
   <>
     {dropzoneStyle}
     {documents.map((doc, idx) => (
@@ -116,10 +121,10 @@ const PdfDropzone = ({documents, onDocumentFileChange, onEditTitle, updateTitle,
         <div className="dropzone-title">
           {editableDoc !== doc.id && <span className="mr3 fw6">{doc.title}</span>}
           {editableDoc === doc.id && <input type="text" className="mr2 fw6" value={doc.title} onKeyDown={(e) =>{ if(e.key === 'Enter') onEditTitle(0)}} onChange={(e) => updateTitle(e.target.value, doc.id)}/>}
-          {editableDoc !== doc.id && <a onClick={() => onEditTitle(doc.id)}><i className="fa fa-pencil-alt" aria-hidden="true"></i></a>}
+          {editableDoc !== doc.id && <a onClick={() => onEditTitle(doc.id)}><i className="fa fa-pencil-alt f5" aria-hidden="true"></i></a>}
           <div className="minimize">
-    { activeDoc === doc.id && <a onClick={() => toggleDropzoneView(0)}><i className="fa fa-minus-square" aria-hidden="true"></i></a>} 
-    { activeDoc !== doc.id && <a onClick={() => toggleDropzoneView(doc.id)}><i className="fa fa-plus-square"></i></a>}
+    { activeDoc === doc.id && <a onClick={() => toggleDropzoneView(0)}><i className="fa fa-minus-square f4" aria-hidden="true"></i></a>} 
+    { activeDoc !== doc.id && <a onClick={() => toggleDropzoneView(doc.id)}><i className="fa fa-plus-square f4"></i></a>}
           </div>
         </div>
         { activeDoc === doc.id && <Dropzone
@@ -133,6 +138,7 @@ const PdfDropzone = ({documents, onDocumentFileChange, onEditTitle, updateTitle,
             <>
               <PdfDropzoneView
                 attachments={documents[idx]["attachments"]}
+                deletePdf={(pdfName) => deletePdf(pdfName, doc.id)}
                 getRootProps={getRootProps}
                 getInputProps={getInputProps}
               />
@@ -156,5 +162,6 @@ PdfDropzone.propTypes = {
   toggleDropzoneView: PropTypes.func,
   onEditTitle: PropTypes.func,
   updateTitle: PropTypes.func,
+  deletePdf: PropTypes.func,
   error: PropTypes.bool
 };

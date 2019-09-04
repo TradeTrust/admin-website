@@ -35,7 +35,7 @@ export const uploadFile = async (file) => {
     const url = get(file, "data.documentUrl");
     const fileName = url.split(":")[2];
     try {
-      await dbx.filesUpload({path: "/" + fileName + '/demo.tt', contents: file});
+      await dbx.filesUpload({path: fileName, contents: file});
       return true;
     } catch(e) {
       return false;

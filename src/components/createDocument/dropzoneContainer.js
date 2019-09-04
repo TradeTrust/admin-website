@@ -31,7 +31,6 @@ const formStyle = css`
 `;
 
 const dropZoneStyle = css`
-  max-height: 300px;
   overflow: scroll;
 `;
 
@@ -122,7 +121,7 @@ class DropzoneContainer extends Component {
       identityProof: { type: "DNS-TXT", location: "stanchart.tradetrust.io" }
     };
     baseDoc.issuers.push(metaObj);
-    baseDoc.documentUrl = uuidv4();
+    baseDoc.documentUrl = "/" + uuidv4() + "/demo.tt";
     return baseDoc;
   };
 
@@ -177,6 +176,15 @@ class DropzoneContainer extends Component {
     const documents = JSON.parse(JSON.stringify(this.state.documents));
     const index = documents.findIndex(doc =>  doc.id == docId);
     documents[index].title = title;
+
+    this.setState({documents});
+  }
+
+  deletePdf = (pdfName, docId) => {
+    const documents = JSON.parse(JSON.stringify(this.state.documents));
+    const docIdx = documents.findIndex(doc =>  doc.id == docId);
+    const pdfIdx = documents[docIdx].attachments.findIndex(pdf =>  pdf.filename === pdfName);
+    documents[docIdx].attachments.splice(pdfIdx, 1);
 
     this.setState({documents});
   }
@@ -240,6 +248,7 @@ class DropzoneContainer extends Component {
               editableDoc={editableDoc}
               toggleDropzoneView={this.toggleDropzoneView}
               updateTitle={this.updateTitle}
+              deletePdf={this.deletePdf}
               onEditTitle={this.onEditTitle}
               onDocumentFileChange={this.onDocumentFileChange}
             />

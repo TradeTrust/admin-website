@@ -1,16 +1,19 @@
 import PropTypes from "prop-types";
 
-const renderPdf = (document, idx) => (
-  <div key={idx} className="pdf-container">
-    <img
-      alt=".tradetrust Dropzone"
-      src="/static/images/dropzone/pdf_file.svg"
-    />
-    <span style={{ fontSize: 12 }}>{document.filename}</span>
+const renderPdf = (pdf, idx, deletePdf) => (
+  <div key={idx} className="pdf-container tc mr2">
+    <div className="delete-icon bg-light-red" onClick={(e) => { e.stopPropagation(); deletePdf(pdf.filename)}}><i className="fa fa-trash white" style={{ fontSize: 14 }}></i></div>
+    <div className="pdf-img w-100">
+      <img
+        alt=".tradetrust Dropzone"
+        src="/static/images/dropzone/pdf_file.svg"
+      />
+      <span style={{ fontSize: 12 }}>{pdf.filename}</span>
+    </div>
   </div>
 );
 
-const PdfDropzoneView = ({ getRootProps, getInputProps, attachments }) => (
+const PdfDropzoneView = ({ getRootProps, getInputProps, attachments, deletePdf }) => (
   <>
     <div
       className={`viewer-container default`}
@@ -18,7 +21,7 @@ const PdfDropzoneView = ({ getRootProps, getInputProps, attachments }) => (
     >
     <div className="text-muted row tr">
       <div className="img-container fl w-70">
-        {attachments.map((pdf, idx) => renderPdf(pdf, idx))}
+        {attachments.map((pdf, idx) => renderPdf(pdf, idx, deletePdf))}
       </div>
       <div className="fr w-30 add-file">
         <button type="button" className="btn">Add files</button><br/>
@@ -39,5 +42,6 @@ export default PdfDropzoneView;
 PdfDropzoneView.propTypes = {
   documents: PropTypes.array,
   getRootProps: PropTypes.func,
-  getInputProps: PropTypes.func
+  getInputProps: PropTypes.func,
+  deletePdf: PropTypes.func
 };
