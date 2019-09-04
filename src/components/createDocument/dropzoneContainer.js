@@ -44,6 +44,7 @@ class DropzoneContainer extends Component {
       fileError: false,
       activeDoc: 0,
       documents: [],
+      editableDoc: 0,
       creatingDocument: false,
       signedDoc: []
     };
@@ -67,7 +68,7 @@ class DropzoneContainer extends Component {
 
     documents[index].attachments.push({filename: pdfName, type: "application/pdf", data});
 
-    this.setState({documents});
+    this.setState({documents, formError: false});
   };
 
   toggleDropzoneView = (id) => {
@@ -75,14 +76,19 @@ class DropzoneContainer extends Component {
     this.setState({activeDoc: id});
   }
 
+  onEditTitle = (id) => {
+    this.setState({editableDoc: id})
+  }
+
   onBatchClick = () => {
     try {
       const { documents, issuerName, documentStore } = this.state;
+      const noAttachments = documents.find(doc => doc.attachments.length === 0);
       if (
         !issuerName ||
         !documentStore ||
         !isValidAddress(documentStore) ||
-        documents.length === 0
+        noAttachments
       ) {
         this.setState({ formError: true });
         return;
@@ -161,6 +167,14 @@ class DropzoneContainer extends Component {
     this.setState({ signedDoc, creatingDocument: false });
   };
 
+  updateTitle = (title, docId) => {
+    const documents = JSON.parse(JSON.stringify(this.state.documents));
+    const index = documents.findIndex(doc =>  doc.id == docId);
+    documents[index].title = title;
+
+    this.setState({documents});
+  }
+
   render() {
     const {
       creatingDocument,
@@ -170,10 +184,11 @@ class DropzoneContainer extends Component {
       signedDoc,
       formError,
       fileError,
-      activeDoc
+      activeDoc,
+      editableDoc
     } = this.state;
     console.log(documents)
-    const { issuedTx, networkId, issuingDocument } = this.props;
+    const { issuedTx, networkId } = this.props;
     return (
       <>
         <div css={css(formStyle)}>
@@ -214,8 +229,12 @@ class DropzoneContainer extends Component {
         <div className="mb4" css={css(dropZoneStyle)}>
             <PdfDropzone
               documents={documents}
+              error={formError}
               activeDoc={activeDoc}
+              editableDoc={editableDoc}
               toggleDropzoneView={this.toggleDropzoneView}
+              updateTitle={this.updateTitle}
+              onEditTitle={this.onEditTitle}
               onDocumentFileChange={this.onDocumentFileChange}
             />
           </div>    
@@ -226,7 +245,7 @@ class DropzoneContainer extends Component {
               <DocumentList signedDocuments={signedDoc} />
             </div>
           )}
-          {issuedTx && !issuingDocument ? (
+          {issuedTx && !creatingDocument ? (
             <div className="mt5">
               <p>🎉 Batch has been issued.</p>
               <div>
@@ -235,17 +254,6 @@ class DropzoneContainer extends Component {
               </div>
             </div>
           ) : null}
-          {/* <div style={{ textAlign: "center" }}>
-            <BlueButton
-              variant="pill"
-              className="mt4"
-              onClick={this.onBatchClick}
-              disabled={creatingDocument}
-            >
-              {creatingDocument ? "Creating..." : "Create Document"}
-            </BlueButton>
-
-          </div> */}
           <div className="left-0 bottom-0 right-0 mw8-ns center mw9">
             <BlueButton
               variant="rounded"

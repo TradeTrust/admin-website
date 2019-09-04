@@ -4,7 +4,7 @@ import PdfDropzoneView from "./pdfDropzoneView";
 import { isValidFileExtension } from "../utils";
 
 import { getLogger } from "../../logger";
-
+import { invalidColor } from "../../styles/variables";
 const { trace, error } = getLogger("services:dropzoneContainer");
 
 /** @jsx jsx */
@@ -19,9 +19,9 @@ const dropzoneStyle = (
         justify-content: center !important;
         flex-direction: column !important;
         display: flex !important;
-
+        outline: none;
         &.default {
-          background-color: #DDFBFC;
+          background-color: #E8F8FD;
           padding: 10px;
         }
       }
@@ -50,11 +50,15 @@ const dropzoneStyle = (
         text-align: left;
         height: 50px;
         border-bottom: 2px solid #BEEAF9;
-        background-color: #DDFBFC;
+        background-color: #E8F8FD;
         padding: 10px;
-        span, svg {
+        span {
           color: #30C8F9;
           font-size: 20px;
+        }
+        svg {
+          color: #30C8F9;
+          font-size: 16px;
         }
       }
       .minimize {
@@ -104,14 +108,15 @@ const onDocumentDrop = (acceptedFiles, docId, handleDocumentChange) => {
     acceptedFiles.map(f => reader.readAsDataURL(f));
 };
 
-const PdfDropzone = ({documents, onDocumentFileChange, toggleDropzoneView, activeDoc}) => (
+const PdfDropzone = ({documents, onDocumentFileChange, onEditTitle, updateTitle, toggleDropzoneView, activeDoc, editableDoc, error}) => (
   <>
     {dropzoneStyle}
     {documents.map((doc, idx) => (
       <div className="mb2" key={idx}>
         <div className="dropzone-title">
-          <span className="mr2 fw6">{doc.title}</span>
-          <i className="fa fa-pencil-alt" aria-hidden="true"></i>
+          {editableDoc !== doc.id && <span className="mr3 fw6">{doc.title}</span>}
+          {editableDoc === doc.id && <input type="text" className="mr2 fw6" value={doc.title} onKeyDown={(e) =>{ if(e.key === 'Enter') onEditTitle(0)}} onChange={(e) => updateTitle(e.target.value, doc.id)}/>}
+          {editableDoc !== doc.id && <a onClick={() => onEditTitle(doc.id)}><i className="fa fa-pencil-alt" aria-hidden="true"></i></a>}
           <div className="minimize">
     { activeDoc === doc.id && <a onClick={() => toggleDropzoneView(0)}><i className="fa fa-minus-square" aria-hidden="true"></i></a>} 
     { activeDoc !== doc.id && <a onClick={() => toggleDropzoneView(doc.id)}><i className="fa fa-plus-square"></i></a>}
@@ -134,6 +139,8 @@ const PdfDropzone = ({documents, onDocumentFileChange, toggleDropzoneView, activ
             </>
           )}
         </Dropzone>}
+        <div><i className="fa fa-trash"></i></div>
+        {error && <small style={{ color: invalidColor }}>record has no attachments</small>}
       </div>
     ))}
   </>
@@ -146,5 +153,8 @@ PdfDropzone.propTypes = {
   handleFileError: PropTypes.func,
   documents: PropTypes.object,
   activeDoc: PropTypes.number,
-  toggleDropzoneView: PropTypes.func
+  toggleDropzoneView: PropTypes.func,
+  onEditTitle: PropTypes.func,
+  updateTitle: PropTypes.func,
+  error: PropTypes.bool
 };

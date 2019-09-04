@@ -13,7 +13,7 @@ const renderPdf = (document, idx) => (
 const PdfDropzoneView = ({ getRootProps, getInputProps, attachments }) => (
   <>
     <div
-      className={`viewer-container mb4  default`}
+      className={`viewer-container default`}
       {...getRootProps()}
     >
     <div className="text-muted row tr">
