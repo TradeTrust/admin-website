@@ -21,6 +21,7 @@ const base = css`
   background: ${black};
   min-width: 10rem;
   margin: 8px;
+  outline: none;
 `;
 
 const rounded = css`
@@ -122,7 +123,7 @@ export const BlueOutlineButton = ({ children, variant, onClick, ...rest }) => {
   );
 };
 
-export const CustomButton  = ({children, className, onClick, ...rest}) => {
+export const CustomButton = ({ children, className, onClick, ...rest }) => {
   const custom = css`
     border-radius: 3px;
     background: #fff;
@@ -133,10 +134,12 @@ export const CustomButton  = ({children, className, onClick, ...rest}) => {
     color: #0099cc;
     margin: 0;
   `;
-  return <Button custom={custom} onClick={onClick} {...rest}>
-          {children}
-        </Button>
-}
+  return (
+    <Button custom={custom} onClick={onClick} {...rest}>
+      {children}
+    </Button>
+  );
+};
 
 Button.propTypes = {
   children: PropTypes.oneOfType([
@@ -188,7 +191,7 @@ BlueOutlineButton.propTypes = {
   onClick: PropTypes.func
 };
 
-CustomButton.PropTypes = {
+CustomButton.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node

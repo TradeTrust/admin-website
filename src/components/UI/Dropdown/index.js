@@ -17,21 +17,25 @@ const selectorBase = css`
   }
 `;
 
-const Dropdown = ({options, value, handleChange}) => (<div className="ba b--light-blue" css={css(divBase)}>
+const Dropdown = ({ options, value, handleChange }) => (
+  <div className="ba b--light-blue" css={css(divBase)}>
     <select
-        css={css(selectorBase)}
-        className="pa2 provider-selector w-100"
-        value={value}
-        onChange={handleChange}
+      css={css(selectorBase)}
+      className="pa2 provider-selector w-100"
+      value={value}
+      onChange={handleChange}
     >
-        {options.map(o => <option value={o.value}>{o.label}</option>)}
+      {options.map((o, idx) => (
+        <option key={idx} value={o.value}>{o.label}</option>
+      ))}
     </select>
-</div>);
+  </div>
+);
 
 export default Dropdown;
 
 Dropdown.propTypes = {
-    options: PropTypes.array,
-    value: PropTypes.string,
-    handleChange: PropTypes.func
-  };
+  options: PropTypes.array,
+  value: PropTypes.string,
+  handleChange: PropTypes.func
+};

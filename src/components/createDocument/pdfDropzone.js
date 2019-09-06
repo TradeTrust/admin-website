@@ -5,10 +5,11 @@ import { isValidFileExtension } from "../utils";
 
 import { getLogger } from "../../logger";
 import { invalidColor } from "../../styles/variables";
-const { trace, error } = getLogger("services:dropzoneContainer");
 
 /** @jsx jsx */
 import { Global, css, jsx } from "@emotion/core";
+
+const { trace, error } = getLogger("services:dropzoneContainer");
 
 const dropzoneStyle = (
   <Global
@@ -21,7 +22,7 @@ const dropzoneStyle = (
         display: flex !important;
         outline: none;
         &.default {
-          background-color: #E8F8FD;
+          background-color: #e8f8fd;
           padding: 10px;
         }
       }
@@ -59,11 +60,12 @@ const dropzoneStyle = (
       .dropzone-title {
         text-align: left;
         height: 50px;
-        border-bottom: 2px solid #BEEAF9;
-        background-color: #E8F8FD;
+        border-bottom: 2px solid #beeaf9;
+        background-color: #e8f8fd;
         padding: 10px;
-        span, svg {
-          color: #30C8F9;
+        span,
+        svg {
+          color: #30c8f9;
         }
       }
       .minimize {
@@ -113,40 +115,109 @@ const onDocumentDrop = (acceptedFiles, docId, handleDocumentChange) => {
     acceptedFiles.map(f => reader.readAsDataURL(f));
 };
 
-const PdfDropzone = ({documents, onDocumentFileChange, onEditTitle, updateTitle, toggleDropzoneView, deletePdf, activeDoc, editableDoc, error}) => (
+const PdfDropzone = ({
+  documents,
+  onDocumentFileChange,
+  onEditTitle,
+  updateTitle,
+  toggleDropzoneView,
+  deletePdf,
+  deleteDoc,
+  activeDoc,
+  editableDoc,
+  error
+}) => (
   <>
     {dropzoneStyle}
     {documents.map((doc, idx) => (
       <div className="mb2" key={idx}>
-        <div className="dropzone-title">
-          {editableDoc !== doc.id && <span className="mr3 fw6">{doc.title}</span>}
-          {editableDoc === doc.id && <input type="text" className="mr2 fw6" value={doc.title} onKeyDown={(e) =>{ if(e.key === 'Enter') onEditTitle(0)}} onChange={(e) => updateTitle(e.target.value, doc.id)}/>}
-          {editableDoc !== doc.id && <a onClick={() => onEditTitle(doc.id)}><i className="fa fa-pencil-alt f5" aria-hidden="true"></i></a>}
+        <div
+          className="bg-light-red"
+          onClick={() => deleteDoc(doc.id)}
+          style={{
+            position: "relative",
+            left: -20,
+            float: "right",
+            marginTop: 5,
+            height: 35,
+            borderRadius: "50%",
+            padding: "5px 0 0 10px",
+            width: 35
+          }}
+        >
+          <i className="fa fa-trash white" />
+        </div>
+        <div className="dropzone-title" style={{ width: "93%" }}>
+          {editableDoc !== doc.id && (
+            <span className="mr3 fw6">{doc.title}</span>
+          )}
+          {editableDoc === doc.id && (
+            <input
+              type="text"
+              className="mr2 fw6"
+              value={doc.title}
+              onKeyDown={e => {
+                if (e.key === "Enter") onEditTitle(0);
+              }}
+              onChange={e => updateTitle(e.target.value, doc.id)}
+            />
+          )}
+          {editableDoc !== doc.id && (
+            <a onClick={() => onEditTitle(doc.id)}>
+              <i className="fa fa-pencil-alt f5" aria-hidden="true" />
+            </a>
+          )}
+          <span
+            style={{
+              width: 25,
+              height: 25,
+              padding: "1px 8px 3px 8px",
+              marginLeft: 10,
+              color: "#fff",
+              background: "#0099cc",
+              borderRadius: "50%"
+            }}
+          >
+            {doc.attachments.length}
+          </span>
           <div className="minimize">
-    { activeDoc === doc.id && <a onClick={() => toggleDropzoneView(0)}><i className="fa fa-minus-square f4" aria-hidden="true"></i></a>} 
-    { activeDoc !== doc.id && <a onClick={() => toggleDropzoneView(doc.id)}><i className="fa fa-plus-square f4"></i></a>}
+            {activeDoc === doc.id && (
+              <a onClick={() => toggleDropzoneView(0)}>
+                <i className="fa fa-minus-square f4" aria-hidden="true" />
+              </a>
+            )}
+            {activeDoc !== doc.id && (
+              <a onClick={() => toggleDropzoneView(doc.id)}>
+                <i className="fa fa-plus-square f4" />
+              </a>
+            )}
           </div>
         </div>
-        { activeDoc === doc.id && <Dropzone
-          id="pdf-dropzone"
-          key={idx}
-          onDrop={acceptedFiles =>
-            onDocumentDrop(acceptedFiles, doc.id, onDocumentFileChange)
-          }
-        >
-          {({ getRootProps, getInputProps }) => (
-            <>
-              <PdfDropzoneView
-                attachments={documents[idx]["attachments"]}
-                deletePdf={(pdfName) => deletePdf(pdfName, doc.id)}
-                getRootProps={getRootProps}
-                getInputProps={getInputProps}
-              />
-            </>
-          )}
-        </Dropzone>}
-        <div><i className="fa fa-trash"></i></div>
-        {error && <small style={{ color: invalidColor }}>record has no attachments</small>}
+        {activeDoc === doc.id && (
+          <Dropzone
+            id="pdf-dropzone"
+            key={idx}
+            onDrop={acceptedFiles =>
+              onDocumentDrop(acceptedFiles, doc.id, onDocumentFileChange)
+            }
+          >
+            {({ getRootProps, getInputProps }) => (
+              <>
+                <PdfDropzoneView
+                  attachments={documents[idx].attachments}
+                  deletePdf={pdfName => deletePdf(pdfName, doc.id)}
+                  getRootProps={getRootProps}
+                  getInputProps={getInputProps}
+                />
+              </>
+            )}
+          </Dropzone>
+        )}
+        {error && (
+          <small style={{ color: invalidColor }}>
+            record has no attachments
+          </small>
+        )}
       </div>
     ))}
   </>
@@ -157,11 +228,12 @@ export default PdfDropzone;
 PdfDropzone.propTypes = {
   onDocumentFileChange: PropTypes.func,
   handleFileError: PropTypes.func,
-  documents: PropTypes.object,
+  documents: PropTypes.array,
   activeDoc: PropTypes.number,
   toggleDropzoneView: PropTypes.func,
   onEditTitle: PropTypes.func,
   updateTitle: PropTypes.func,
   deletePdf: PropTypes.func,
+  deleteDoc: PropTypes.func,
   error: PropTypes.bool
 };
