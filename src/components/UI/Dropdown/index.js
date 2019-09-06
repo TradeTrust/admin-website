@@ -6,7 +6,7 @@ import { white } from "../../../styles/variables";
 
 const divBase = css`
   border-radius: 5px;
-  padding: 0.2em 0.5em;
+  padding: 0.3rem 0.5rem;
 `;
 
 const selectorBase = css`
@@ -18,7 +18,7 @@ const selectorBase = css`
 `;
 
 const Dropdown = ({ options, value, handleChange }) => (
-  <div className="ba b--light-blue" css={css(divBase)}>
+  <div className="ba b--light-blue mt2" css={css(divBase)}>
     <select
       css={css(selectorBase)}
       className="pa2 provider-selector w-100"

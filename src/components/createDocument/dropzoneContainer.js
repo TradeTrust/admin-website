@@ -215,7 +215,7 @@ class DropzoneContainer extends Component {
             <div className="fl w-100 mr5 ml4">
               <div className="mb4">
                 <div className="fl w-50 pr2">
-                  Issuer Name
+                  <span className="silver fw6">Issuer Name</span>
                   <Dropdown
                     options={STORE_ADDR}
                     value={documentStore}
@@ -223,10 +223,10 @@ class DropzoneContainer extends Component {
                   />
                 </div>
                 <div className="fl w-50 pl2">
-                  Document Store
+                  <span className="silver fw6">Document Store</span>
                   <Input
                     id="store"
-                    className="fr ba b--light-blue"
+                    className="fr ba b--light-blue mt2"
                     name="documentStore"
                     variant="rounded"
                     type="text"
@@ -242,7 +242,7 @@ class DropzoneContainer extends Component {
             </div>
           </div>
           <div className="mb4">
-            <div className="mb4 mr5 ml4">
+            <div className="mb4 mr5 ml4 gray fw6 f4">
               For each trade transaction, create a new record. Then add the
               relevent files to the record.
             </div>
@@ -280,7 +280,7 @@ class DropzoneContainer extends Component {
               </div>
             </div>
           ) : null}
-          <div className="left-0 bottom-0 right-0 mw8-ns mw9 mr5 ml4">
+          {documents.length > 0 && <div className="left-0 bottom-0 right-0 mw8-ns mw9 mr5 ml4">
             <BlueButton
               variant="rounded"
               onClick={this.onBatchClick}
@@ -295,7 +295,7 @@ class DropzoneContainer extends Component {
             >
               {creatingDocument ? "Issuing…" : "Issue all records"}
             </BlueButton>
-          </div>
+          </div>}
         </div>
       </>
     );

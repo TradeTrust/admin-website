@@ -169,12 +169,10 @@ const PdfDropzone = ({
           )}
           <span
             style={{
-              width: 25,
-              height: 25,
-              padding: "1px 8px 3px 8px",
+              padding: "0 7px 2px 7px",
               marginLeft: 10,
               color: "#fff",
-              background: "#0099cc",
+              background: "#357EDD",
               borderRadius: "50%"
             }}
           >
