@@ -123,7 +123,7 @@ export const BlueOutlineButton = ({ children, variant, onClick, ...rest }) => {
   );
 };
 
-export const CustomButton = ({ children, className, onClick, ...rest }) => {
+export const CustomButton = ({ children, onClick, ...rest }) => {
   const custom = css`
     border-radius: 3px;
     background: #fff;
@@ -196,6 +196,5 @@ CustomButton.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node
   ]).isRequired,
-  className: PropTypes.string,
   onClick: PropTypes.func
 };

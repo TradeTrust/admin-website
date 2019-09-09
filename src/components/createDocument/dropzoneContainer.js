@@ -14,7 +14,7 @@ import { createBaseDocument, isValidAddress, uploadFile } from "../utils";
 import DocumentList from "./documentList";
 import Dropdown from "../UI/Dropdown";
 import { getLogger } from "../../logger";
-import { STORE_ADDR } from "./store";
+import STORE_ADDR from "./store";
 
 const uuidv4 = require("uuid/v4");
 
@@ -97,7 +97,7 @@ class DropzoneContainer extends Component {
       const signedDoc = this.issueDocuments(unSignedData);
       this.onIssueClick(signedDoc);
       Promise.all(signedDoc.map(doc => uploadFile(doc))).then(res => {
-        res.filter((val, idx) => {
+        res.forEach((val, idx) => {
           if (!val) signedDoc.splice(idx, 1);
         });
         this.setState({ signedDoc, creatingDocument: false });
@@ -143,7 +143,7 @@ class DropzoneContainer extends Component {
       fieldName === "documentStore" &&
       !isValidAddress(fieldValue)
     )
-    return "Enter valid store address";
+      return "Enter valid store address";
 
     return formError && !fieldValue ? "This field is required" : "";
   };
@@ -185,16 +185,16 @@ class DropzoneContainer extends Component {
   };
 
   deleteDoc = docId => {
-    const {documents, docIdx } = this.findDocumentIndex(docId);
+    const { documents, docIdx } = this.findDocumentIndex(docId);
     documents.splice(docIdx, 1);
     this.setState({ documents });
   };
 
   findDocumentIndex = docId => {
     const documents = JSON.parse(JSON.stringify(this.state.documents));
-    const docIdx = documents.findIndex(doc => doc.id == docId);
-    return { documents, docIdx};
-  }
+    const docIdx = documents.findIndex(doc => doc.id === docId);
+    return { documents, docIdx };
+  };
 
   render() {
     const {
@@ -206,8 +206,8 @@ class DropzoneContainer extends Component {
       activeDoc,
       editableDoc
     } = this.state;
-    console.log(documents);
     const { issuedTx, networkId } = this.props;
+
     return (
       <>
         <div css={css(formStyle)}>
@@ -249,7 +249,7 @@ class DropzoneContainer extends Component {
             <div className="mb4 ml4" css={css(dropZoneStyle)}>
               <PdfDropzone
                 documents={documents}
-                error={formError}
+                isError={formError}
                 activeDoc={activeDoc}
                 editableDoc={editableDoc}
                 toggleDropzoneView={this.toggleDropzoneView}
@@ -262,7 +262,8 @@ class DropzoneContainer extends Component {
             </div>
             <div className="mr5 ml4">
               <CustomButton onClick={this.createDocument}>
-                <i className="fa fa-plus mr2"></i>Click to create a new record
+                <i className="fa fa-plus mr2" />
+                Click to create a new record
               </CustomButton>
             </div>
           </div>
@@ -280,22 +281,24 @@ class DropzoneContainer extends Component {
               </div>
             </div>
           ) : null}
-          {documents.length > 0 && <div className="left-0 bottom-0 right-0 mw8-ns mw9 mr5 ml4">
-            <BlueButton
-              variant="rounded"
-              onClick={this.onBatchClick}
-              style={{
-                width: "100%",
-                height: 80,
-                fontSize: 25,
-                fonrWeight: 600,
-                margin: 0
-              }}
-              disabled={creatingDocument}
-            >
-              {creatingDocument ? "Issuing…" : "Issue all records"}
-            </BlueButton>
-          </div>}
+          {documents.length > 0 && (
+            <div className="left-0 bottom-0 right-0 mw8-ns mw9 mr5 ml4">
+              <BlueButton
+                variant="rounded"
+                onClick={this.onBatchClick}
+                style={{
+                  width: "100%",
+                  height: 80,
+                  fontSize: 25,
+                  fonrWeight: 600,
+                  margin: 0
+                }}
+                disabled={creatingDocument}
+              >
+                {creatingDocument ? "Issuing…" : "Issue all records"}
+              </BlueButton>
+            </div>
+          )}
         </div>
       </>
     );

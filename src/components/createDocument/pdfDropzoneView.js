@@ -60,5 +60,6 @@ PdfDropzoneView.propTypes = {
   documents: PropTypes.array,
   getRootProps: PropTypes.func,
   getInputProps: PropTypes.func,
-  deletePdf: PropTypes.func
+  deletePdf: PropTypes.func,
+  attachments: PropTypes.array
 };

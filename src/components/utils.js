@@ -32,7 +32,6 @@ export const uploadFile = async file => {
   const ACCESS_TOKEN =
     "HSoTbMxiWcAAAAAAAAAAKIR3Kxl2D5K_GclsAYwztvM6XX8ipOTmj5eGJcIhtlGN";
   const dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
-  console.log(file);
   const url = get(file, "data.documentUrl");
   const fileName = url.split(":")[2];
   try {

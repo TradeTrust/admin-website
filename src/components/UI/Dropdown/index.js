@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
@@ -26,7 +25,9 @@ const Dropdown = ({ options, value, handleChange }) => (
       onChange={handleChange}
     >
       {options.map((o, idx) => (
-        <option key={idx} value={o.value}>{o.label}</option>
+        <option key={idx} value={o.value}>
+          {o.label}
+        </option>
       ))}
     </select>
   </div>

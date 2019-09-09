@@ -1,13 +1,12 @@
 import PropTypes from "prop-types";
 import Dropzone from "react-dropzone";
-import PdfDropzoneView from "./pdfDropzoneView";
-import { isValidFileExtension } from "../utils";
-
-import { getLogger } from "../../logger";
-import { invalidColor } from "../../styles/variables";
-
 /** @jsx jsx */
 import { Global, css, jsx } from "@emotion/core";
+
+import PdfDropzoneView from "./pdfDropzoneView";
+import { isValidFileExtension } from "../utils";
+import { getLogger } from "../../logger";
+import { invalidColor } from "../../styles/variables";
 
 const { trace, error } = getLogger("services:dropzoneContainer");
 
@@ -125,7 +124,7 @@ const PdfDropzone = ({
   deleteDoc,
   activeDoc,
   editableDoc,
-  error
+  isError
 }) => (
   <>
     {dropzoneStyle}
@@ -211,7 +210,7 @@ const PdfDropzone = ({
             )}
           </Dropzone>
         )}
-        {error && (
+        {isError && (
           <small style={{ color: invalidColor }}>
             record has no attachments
           </small>
@@ -233,5 +232,6 @@ PdfDropzone.propTypes = {
   updateTitle: PropTypes.func,
   deletePdf: PropTypes.func,
   deleteDoc: PropTypes.func,
-  error: PropTypes.bool
+  isError: PropTypes.bool,
+  editableDoc: PropTypes.number
 };
