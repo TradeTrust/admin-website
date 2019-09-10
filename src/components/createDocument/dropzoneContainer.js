@@ -90,12 +90,12 @@ class DropzoneContainer extends Component {
       this.setState({ creatingDocument: true, formError: false });
 
       const unSignedData = documents.map(doc => {
-        const baseDoc = this.generateBaseDoc();
+        const baseDoc = this.generateBaseDoc(doc.title);
         baseDoc.attachments = doc.attachments;
         return baseDoc;
       });
       const signedDoc = this.issueDocuments(unSignedData);
-      this.onIssueClick(signedDoc);
+      this.publishDocuments(signedDoc);
       Promise.all(signedDoc.map(doc => uploadFile(doc))).then(res => {
         res.forEach((val, idx) => {
           if (!val) signedDoc.splice(idx, 1);
@@ -107,7 +107,7 @@ class DropzoneContainer extends Component {
     }
   };
 
-  generateBaseDoc = () => {
+  generateBaseDoc = title => {
     const { issuerName, documentStore } = this.state;
     const baseDoc = createBaseDocument();
     const metaObj = {
@@ -116,7 +116,7 @@ class DropzoneContainer extends Component {
       identityProof: { type: "DNS-TXT", location: "stanchart.tradetrust.io" }
     };
     baseDoc.issuers.push(metaObj);
-    baseDoc.documentUrl = `/${uuidv4()}/demo.tt`;
+    baseDoc.documentUrl = `/${uuidv4()}/${title}.tt`;
     return baseDoc;
   };
 
@@ -136,29 +136,7 @@ class DropzoneContainer extends Component {
     });
   };
 
-  getErrorMessage = (formError, fieldValue, fieldName) => {
-    if (
-      formError &&
-      fieldValue &&
-      fieldName === "documentStore" &&
-      !isValidAddress(fieldValue)
-    )
-      return "Enter valid store address";
-
-    return formError && !fieldValue ? "This field is required" : "";
-  };
-
-  resetForm = () =>
-    this.setState({
-      formError: false,
-      fileError: false,
-      documentId: 0,
-      documents: [],
-      creatingDocument: false,
-      signedDoc: []
-    });
-
-  onIssueClick = signedDoc => {
+  publishDocuments = signedDoc => {
     const { adminAddress, handleDocumentIssue } = this.props;
     const { documentStore } = this.state;
     const documentHash = `0x${get(signedDoc, "[0].signature.merkleRoot")}`;
@@ -196,6 +174,20 @@ class DropzoneContainer extends Component {
     return { documents, docIdx };
   };
 
+  resetForm = () => {
+    this.setState({
+      issuerName: STORE_ADDR[0].label,
+      documentStore: STORE_ADDR[0].value,
+      formError: false,
+      fileError: false,
+      activeDoc: 0,
+      documents: [],
+      editableDoc: 0,
+      creatingDocument: false,
+      signedDoc: []
+    });
+  };
+
   render() {
     const {
       creatingDocument,
@@ -210,7 +202,7 @@ class DropzoneContainer extends Component {
 
     return (
       <>
-        <div css={css(formStyle)}>
+        <div className="mt4" css={css(formStyle)}>
           <div className="flex flex-row w-100 mb4">
             <div className="fl w-100 mr5 ml4">
               <div className="mb4">
@@ -245,6 +237,12 @@ class DropzoneContainer extends Component {
             <div className="mb4 mr5 ml4 gray fw6 f4">
               For each trade transaction, create a new record. Then add the
               relevent files to the record.
+              <a
+                onClick={this.resetForm}
+                className="ml2 f5 light-blue underline pointer"
+              >
+                Reset All{" "}
+              </a>
             </div>
             <div className="mb4 ml4" css={css(dropZoneStyle)}>
               <PdfDropzone
@@ -268,12 +266,12 @@ class DropzoneContainer extends Component {
             </div>
           </div>
           {signedDoc.length > 0 && (
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex" }} className="mr5 ml5">
               <DocumentList signedDocuments={signedDoc} />
             </div>
           )}
           {issuedTx && !creatingDocument ? (
-            <div className="mt5 mr5 ml4">
+            <div className="mb4 mr5 ml4">
               <p>🎉 Batch has been issued.</p>
               <div>
                 Transaction ID{" "}

@@ -11,7 +11,9 @@ const DocumentList = props =>
           width="100%"
         />
       </a>
-      <span className="mb2">{`Doc-${idx + 1}.tt`}</span>
+      <span className="mb2">{`${
+        doc.data.documentUrl.split(":")[2].split("/")[2]
+      }`}</span>
     </div>
   ));
 
