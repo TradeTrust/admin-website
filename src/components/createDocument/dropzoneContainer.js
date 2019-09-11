@@ -185,17 +185,22 @@ class DropzoneContainer extends Component {
       const title = `${get(docData, "name")}.tt`;
       zip.file(title, JSON.stringify(doc));
     });
-    zip.generateAsync({ type: "blob", compression: "DEFLATE",
-    compressionOptions: {
-        level: 6
-    } }).then(content => {
-      console.log(content);
-      try {
-        FileSaver.saveAs(content, "documents.zip");
-      } catch (e) {
-        console.log(e);
-      }
-    });
+    zip
+      .generateAsync({
+        type: "blob",
+        compression: "DEFLATE",
+        compressionOptions: {
+          level: 6
+        }
+      })
+      .then(content => {
+        console.log(content);
+        try {
+          FileSaver.saveAs(content, "documents.zip");
+        } catch (e) {
+          console.log(e);
+        }
+      });
   };
 
   resetForm = () => {
