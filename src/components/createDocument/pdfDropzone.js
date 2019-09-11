@@ -89,6 +89,16 @@ const dropzoneStyle = (
         -ms-transform: translateY(-50%);
         transform: translateY(-50%);
       }
+      .delete-row {
+        position: relative;
+        left: -20px;
+        float: right;
+        margin-top: 5px;
+        height: 35px;
+        border-radius: 50%;
+        padding: 5px 0 0 10px;
+        width: 35px;
+      }
     `}
   />
 );
@@ -131,18 +141,8 @@ const PdfDropzone = ({
     {documents.map((doc, idx) => (
       <div className="mb2" key={idx}>
         <div
-          className="bg-light-red"
+          className="delete-row bg-light-red"
           onClick={() => deleteDoc(doc.id)}
-          style={{
-            position: "relative",
-            left: -20,
-            float: "right",
-            marginTop: 5,
-            height: 35,
-            borderRadius: "50%",
-            padding: "5px 0 0 10px",
-            width: 35
-          }}
         >
           <i className="fa fa-trash white" />
         </div>
@@ -155,9 +155,7 @@ const PdfDropzone = ({
               type="text"
               className="mr2 fw6"
               value={doc.title}
-              onKeyDown={e => {
-                if (e.key === "Enter") onEditTitle(0);
-              }}
+              onBlur={() => onEditTitle(0)}
               onChange={e => updateTitle(e.target.value, doc.id)}
             />
           )}

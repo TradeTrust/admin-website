@@ -5,6 +5,8 @@ import { get } from "lodash";
 
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
+import { getData } from "@govtechsg/open-attestation";
+import FileSaver from "file-saver";
 
 import HashColor from "../UI/HashColor";
 import PdfDropzone from "./pdfDropzone";
@@ -17,6 +19,7 @@ import { getLogger } from "../../logger";
 import STORE_ADDR from "./store";
 
 const uuidv4 = require("uuid/v4");
+const JSZip = require("jszip");
 
 const { trace, error } = getLogger("services:dropzoneContainer");
 
@@ -116,6 +119,7 @@ class DropzoneContainer extends Component {
       identityProof: { type: "DNS-TXT", location: "stanchart.tradetrust.io" }
     };
     baseDoc.issuers.push(metaObj);
+    baseDoc.name = title;
     baseDoc.documentUrl = `/${uuidv4()}/${title}.tt`;
     return baseDoc;
   };
@@ -172,6 +176,26 @@ class DropzoneContainer extends Component {
     const documents = JSON.parse(JSON.stringify(this.state.documents));
     const docIdx = documents.findIndex(doc => doc.id === docId);
     return { documents, docIdx };
+  };
+
+  downloadAllDocuments = () => {
+    const zip = new JSZip();
+    this.state.signedDoc.forEach(doc => {
+      const docData = getData(doc);
+      const title = `${get(docData, "name")}.tt`;
+      zip.file(title, JSON.stringify(doc));
+    });
+    zip.generateAsync({ type: "blob", compression: "DEFLATE",
+    compressionOptions: {
+        level: 6
+    } }).then(content => {
+      console.log(content);
+      try {
+        FileSaver.saveAs(content, "documents.zip");
+      } catch (e) {
+        console.log(e);
+      }
+    });
   };
 
   resetForm = () => {
@@ -266,9 +290,23 @@ class DropzoneContainer extends Component {
             </div>
           </div>
           {signedDoc.length > 0 && (
-            <div style={{ display: "flex" }} className="mr5 ml5">
-              <DocumentList signedDocuments={signedDoc} />
-            </div>
+            <>
+              <span className="mb4 ml4 gray fw6 f5">
+                {" "}
+                Click on the document to download it
+              </span>
+              <span className="mb4 mr1 ml4 gray fw6 f4"> OR</span>
+              <BlueButton
+                variant="rounded"
+                className="ml4 pa1"
+                onClick={this.downloadAllDocuments}
+              >
+                {"Download All"}
+              </BlueButton>
+              <div style={{ display: "flex" }} className="mr5 ml5">
+                <DocumentList signedDocuments={signedDoc} />
+              </div>
+            </>
           )}
           {issuedTx && !creatingDocument ? (
             <div className="mb4 mr5 ml4">
