@@ -194,11 +194,10 @@ class DropzoneContainer extends Component {
         }
       })
       .then(content => {
-        console.log(content);
         try {
           FileSaver.saveAs(content, "documents.zip");
         } catch (e) {
-          console.log(e);
+          error(e);
         }
       });
   };
