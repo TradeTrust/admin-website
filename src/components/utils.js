@@ -1,5 +1,6 @@
 import { isAddress, toChecksumAddress } from "web3-utils";
 import { get } from "lodash";
+import { getData } from "@govtechsg/open-attestation";
 
 const Dropbox = require("dropbox");
 // eslint-disable-next-line import/prefer-default-export
@@ -32,10 +33,10 @@ export const uploadFile = async file => {
   const ACCESS_TOKEN =
     "HSoTbMxiWcAAAAAAAAAAKIR3Kxl2D5K_GclsAYwztvM6XX8ipOTmj5eGJcIhtlGN";
   const dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
-  const url = get(file, "data.documentUrl");
-  const fileName = url.split(":")[2];
+  const data = getData(file);
+  const url = get(data, "documentUrl");
   try {
-    await dbx.filesUpload({ path: fileName, contents: JSON.stringify(file) });
+    await dbx.filesUpload({ path: url, contents: JSON.stringify(file) });
     return true;
   } catch (e) {
     return false;

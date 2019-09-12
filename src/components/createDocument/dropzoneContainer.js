@@ -294,23 +294,10 @@ class DropzoneContainer extends Component {
             </div>
           </div>
           {signedDoc.length > 0 && (
-            <>
-              <span className="mb4 ml4 gray fw6 f5">
-                {" "}
-                Click on the document to download it
-              </span>
-              <span className="mb4 mr1 ml4 gray fw6 f4"> OR</span>
-              <BlueButton
-                variant="rounded"
-                className="ml4 pa1"
-                onClick={this.downloadAllDocuments}
-              >
-                {"Download All"}
-              </BlueButton>
-              <div style={{ display: "flex" }} className="mr5 ml5">
-                <DocumentList signedDocuments={signedDoc} />
-              </div>
-            </>
+            <DocumentList
+              downloadDocuments={this.downloadAllDocuments}
+              signedDocuments={signedDoc}
+            />
           )}
           {issuedTx && !creatingDocument ? (
             <div className="mb4 mr5 ml4">
