@@ -33,10 +33,6 @@ const formStyle = css`
   padding: 3rem;
 `;
 
-const dropZoneStyle = css`
-  overflow: scroll;
-`;
-
 class DropzoneContainer extends Component {
   constructor(props) {
     super(props);
@@ -44,12 +40,13 @@ class DropzoneContainer extends Component {
       issuerName: STORE_ADDR[0].label,
       documentStore: STORE_ADDR[0].value,
       formError: false,
-      fileError: false,
+      batchError: "",
       activeDoc: 0,
       documents: [],
       editableDoc: 0,
       creatingDocument: false,
-      signedDoc: []
+      signedDoc: [],
+      accessToken: ""
     };
   }
 
@@ -79,7 +76,7 @@ class DropzoneContainer extends Component {
 
   onBatchClick = () => {
     try {
-      const { documents, issuerName, documentStore } = this.state;
+      const { documents, issuerName, documentStore, accessToken } = this.state;
       const noAttachments = documents.find(doc => doc.attachments.length === 0);
       if (
         !issuerName ||
@@ -98,13 +95,26 @@ class DropzoneContainer extends Component {
         return baseDoc;
       });
       const signedDoc = this.issueDocuments(unSignedData);
-      this.publishDocuments(signedDoc);
-      Promise.all(signedDoc.map(doc => uploadFile(doc))).then(res => {
-        res.forEach((val, idx) => {
-          if (!val) signedDoc.splice(idx, 1);
-        });
-        this.setState({ signedDoc, creatingDocument: false });
-      });
+
+      Promise.all(signedDoc.map(doc => uploadFile(doc, accessToken))).then(
+        res => {
+          res.forEach((val, idx) => {
+            if (!val) signedDoc.splice(idx, 1);
+          });
+          if (signedDoc.length > 0) {
+            this.publishDocuments(signedDoc);
+            this.setState({
+              signedDoc,
+              creatingDocument: false,
+              batchError: ""
+            });
+            return;
+          }
+          this.setState({
+            batchError: "Please check your dropbox access token or settings"
+          });
+        }
+      );
     } catch (e) {
       error(e);
     }
@@ -133,6 +143,10 @@ class DropzoneContainer extends Component {
   };
 
   onInputFieldChange = e => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  onDropdownChange = e => {
     const addrValue = STORE_ADDR.find(addr => addr.value === e.target.value);
     this.setState({
       issuerName: addrValue.label,
@@ -224,9 +238,11 @@ class DropzoneContainer extends Component {
       signedDoc,
       formError,
       activeDoc,
-      editableDoc
+      editableDoc,
+      accessToken,
+      batchError
     } = this.state;
-    const { issuedTx, networkId } = this.props;
+    const { issuedTx, networkId, issuingError } = this.props;
 
     return (
       <>
@@ -239,7 +255,7 @@ class DropzoneContainer extends Component {
                   <Dropdown
                     options={STORE_ADDR}
                     value={documentStore}
-                    handleChange={this.onInputFieldChange}
+                    handleChange={this.onDropdownChange}
                   />
                 </div>
                 <div className="fl w-50 pl2">
@@ -261,6 +277,22 @@ class DropzoneContainer extends Component {
               </div>
             </div>
           </div>
+          <div className="fl w-90 mr4 ml4 mb4">
+            <span className="silver fw6">Dropbox Token</span>
+            <Input
+              id="store"
+              className="fr ba b--light-blue mt2"
+              name="accessToken"
+              variant="rounded"
+              type="text"
+              borderColor="#96ccff"
+              placeholder="Enter access token"
+              value={accessToken}
+              onChange={this.onInputFieldChange}
+              size={50}
+              required
+            />
+          </div>
           <div className="mb4">
             <div className="mb4 mr5 ml4 gray fw6 f4">
               For each trade transaction, create a new record. Then add the
@@ -272,7 +304,7 @@ class DropzoneContainer extends Component {
                 Reset All{" "}
               </a>
             </div>
-            <div className="mb4 ml4" css={css(dropZoneStyle)}>
+            <div className="mb4 ml4">
               <PdfDropzone
                 documents={documents}
                 isError={formError}
@@ -308,6 +340,11 @@ class DropzoneContainer extends Component {
               </div>
             </div>
           ) : null}
+          {((!issuedTx && issuingError) || batchError) && (
+            <div className="mb4 mr5 ml4 light-red">
+              <p>{issuingError || batchError}</p>
+            </div>
+          )}
           {documents.length > 0 && (
             <div className="left-0 bottom-0 right-0 mw8-ns mw9 mr5 ml4">
               <BlueButton
@@ -320,9 +357,9 @@ class DropzoneContainer extends Component {
                   fonrWeight: 600,
                   margin: 0
                 }}
-                disabled={creatingDocument}
+                disabled={this.props.issuingDocument}
               >
-                {creatingDocument ? "Issuing…" : "Issue all records"}
+                {this.props.issuingDocument ? "Issuing…" : "Issue all records"}
               </BlueButton>
             </div>
           )}
@@ -339,5 +376,6 @@ DropzoneContainer.propTypes = {
   handleDocumentIssue: PropTypes.func,
   issuedTx: PropTypes.string,
   networkId: PropTypes.number,
-  issuingDocument: PropTypes.bool
+  issuingDocument: PropTypes.bool,
+  issuingError: PropTypes.object
 };

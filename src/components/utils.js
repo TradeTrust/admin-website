@@ -29,10 +29,8 @@ const validExt = /(.*)(\.)(pdf)$/;
 export const isValidFileExtension = fileName =>
   validExt.test(fileName.toLowerCase());
 
-export const uploadFile = async file => {
-  const ACCESS_TOKEN =
-    "HSoTbMxiWcAAAAAAAAAAKIR3Kxl2D5K_GclsAYwztvM6XX8ipOTmj5eGJcIhtlGN";
-  const dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
+export const uploadFile = async (file, accessToken) => {
+  const dbx = new Dropbox.Dropbox({ accessToken });
   const data = getData(file);
   const url = get(data, "documentUrl");
   try {

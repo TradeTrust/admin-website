@@ -20,7 +20,7 @@ const Dropdown = ({ options, value, handleChange }) => (
   <div className="ba b--light-blue mt2" css={css(divBase)}>
     <select
       css={css(selectorBase)}
-      className="pa2 provider-selector w-100"
+      className="provider-selector w-100"
       value={value}
       onChange={handleChange}
     >
