@@ -191,3 +191,7 @@ export function getIssuingDocument(store) {
 export function getrevokingDocument(store) {
   return store.admin.revokingDocument;
 }
+
+export function getIssuingError(store) {
+  return store.admin.issuingError;
+}
