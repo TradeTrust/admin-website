@@ -1,12 +1,11 @@
 # Document Web UI
 
-[![Build Status](https://travis-ci.org/GovTechSG/document-web-ui.svg?branch=master)](https://travis-ci.org/GovTechSG/document-web-ui)
-
 See also:
 
-* [document-schema](https://github.com/GovTechSG/document-schema)
-* [document-contract](https://github.com/GovTechSG/document-contract)
-* [document-cli](https://github.com/GovTechSG/document-cli)
+* [Tradetrust Schemas](https://github.com/TradeTrust/tradetrust-schema)
+* [Document Store Ethereum Smart Contract](https://github.com/Open-Attestation/document-store-contract)
+* [ERC 721](http://erc721.org/)
+* [Tradetrust CLI Tool](https://github.com/TradeTrust/tradetrust-cli)
 
 ## Development
 
