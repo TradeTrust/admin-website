@@ -20,7 +20,7 @@ import STORE_ADDR from "./store";
 import {
   getDocumentQueueNumber,
   updateDocument
-} from "../../services/certificateStore";
+} from "../../services/documentStore";
 import { SHARE_LINK_API_URL } from "../../config";
 
 const JSZip = require("jszip");
