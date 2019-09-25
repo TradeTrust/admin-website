@@ -14,8 +14,7 @@ export function updateDocument(document) {
         document
       })
     })
-    .then(res => res.json())
-    .catch(() => false);
+    .then(res => res.json());
 }
 
 export function getDocumentQueueNumber() {

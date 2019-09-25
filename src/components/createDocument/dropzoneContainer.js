@@ -110,7 +110,7 @@ class DropzoneContainer extends Component {
         signedDoc.map(doc => updateDocument(doc))
       );
       response.forEach((val, idx) => {
-        if (!val) signedDoc.splice(idx, 1);
+        if (val.error) signedDoc.splice(idx, 1);
       });
       if (signedDoc.length > 0) {
         this.publishDocuments(signedDoc);
