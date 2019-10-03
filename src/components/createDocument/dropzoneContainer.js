@@ -92,25 +92,28 @@ class DropzoneContainer extends Component {
       }
       this.setState({ creatingDocument: true, formError: false });
 
-      const queueNumbers = await Promise.all(
+      const tempData = await Promise.all(
         documents.map(() => getDocumentQueueNumber())
       );
 
       const unSignedData = documents.map((doc, idx) => {
-        const baseDoc = this.generateBaseDoc(
-          doc.title,
-          queueNumbers[idx].queueNumber
-        );
+        const baseDoc = this.generateBaseDoc(doc.title, tempData[idx]);
         baseDoc.attachments = doc.attachments;
         return baseDoc;
       });
-      const signedDoc = this.issueDocuments(unSignedData);
+      const signedDoc = this.handleIssueDocuments(unSignedData);
 
       const response = await Promise.all(
-        signedDoc.map(doc => updateDocument(doc))
+        signedDoc.map(doc => {
+          const url = get(doc, "data.documentUrl");
+          const splitUrl = decodeURIComponent(url)
+            .split("#")[0]
+            .split("/");
+          return updateDocument(doc, splitUrl[splitUrl.length - 1]);
+        })
       );
       response.forEach((val, idx) => {
-        if (val.error) signedDoc.splice(idx, 1);
+        if (!val) signedDoc.splice(idx, 1);
       });
       if (signedDoc.length > 0) {
         this.publishDocuments(signedDoc);
@@ -129,7 +132,7 @@ class DropzoneContainer extends Component {
     }
   };
 
-  generateBaseDoc = (title, queueNumber) => {
+  generateBaseDoc = (title, tempData) => {
     const { issuerName, documentStore } = this.state;
     const baseDoc = createBaseDocument();
     const metaObj = {
@@ -139,14 +142,12 @@ class DropzoneContainer extends Component {
     };
     baseDoc.issuers.push(metaObj);
     baseDoc.name = title;
-    const url = `${SHARE_LINK_API_URL}/get/${queueNumber}`;
-    baseDoc.documentUrl = `tradetrust://${encodeURIComponent(
-      JSON.stringify(url)
-    )}`;
+    const url = `${SHARE_LINK_API_URL}/get/${tempData.queueNumber}#${tempData.key}`;
+    baseDoc.documentUrl = `encodeURIComponent(tradetrust://${url})`;
     return baseDoc;
   };
 
-  issueDocuments = rawJson => {
+  handleIssueDocuments = rawJson => {
     try {
       return issueDocuments(rawJson);
     } catch (e) {

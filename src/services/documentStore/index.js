@@ -1,9 +1,9 @@
 import "isomorphic-fetch";
 import { SHARE_LINK_API_URL, SHARE_LINK_TTL } from "../../config";
 
-export function updateDocument(document) {
+export function updateDocument(document, id) {
   return window
-    .fetch(`${SHARE_LINK_API_URL}/update`, {
+    .fetch(`${SHARE_LINK_API_URL}/create`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -11,7 +11,8 @@ export function updateDocument(document) {
       },
       body: JSON.stringify({
         ttl: SHARE_LINK_TTL,
-        document
+        document,
+        id
       })
     })
     .then(res => res.json());
