@@ -11,7 +11,7 @@ const getTitle = data => {
 
 const DocumentList = props =>
   props.signedDocuments.map((doc, idx) => (
-    <>
+    <div key={idx}>
       <span className="mb4 ml4 gray fw6 f5">
         {" "}
         Click on the document to download it
@@ -27,7 +27,9 @@ const DocumentList = props =>
       <div style={{ display: "flex" }} className="mr5 ml5">
         <div key={idx} style={{ width: 70, margin: 5 }}>
           <a
-            href={`data:text/plain;,${JSON.stringify(doc, null, 2)}`}
+            href={`data:text/plain;charset=utf-8,${encodeURIComponent(
+              JSON.stringify(doc, null, 2)
+            )}`}
             download={getTitle(doc)}
           >
             <img
@@ -39,7 +41,7 @@ const DocumentList = props =>
           <span className="mb2">{`${getTitle(doc)}`}</span>
         </div>
       </div>
-    </>
+    </div>
   ));
 
 export default DocumentList;
