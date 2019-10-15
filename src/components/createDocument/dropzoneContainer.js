@@ -53,6 +53,15 @@ class DropzoneContainer extends Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    if (
+      !this.props.issuingDocument &&
+      prevProps.issuedTx !== this.props.issuedTx
+    ) {
+      this.uploadPulishedDocuments();
+    }
+  }
+
   handleFileError = () => this.setState({ fileError: true });
 
   createDocument = () => {
@@ -101,34 +110,35 @@ class DropzoneContainer extends Component {
         baseDoc.attachments = doc.attachments;
         return baseDoc;
       });
-      const signedDoc = this.handleIssueDocuments(unSignedData);
 
-      const response = await Promise.all(
-        signedDoc.map(doc => {
-          const url = get(doc, "data.documentUrl");
-          const splitUrl = decodeURIComponent(url)
-            .split("#")[0]
-            .split("/");
-          return updateDocument(doc, splitUrl[splitUrl.length - 1]);
-        })
-      );
-      response.forEach((val, idx) => {
-        if (!val) signedDoc.splice(idx, 1);
-      });
-      if (signedDoc.length > 0) {
-        this.publishDocuments(signedDoc);
-        this.setState({
-          signedDoc,
-          creatingDocument: false,
-          batchError: ""
-        });
-        return;
-      }
-      this.setState({
-        batchError: "Please check your upload api settings"
-      });
+      const signedDoc = this.handleIssueDocuments(unSignedData);
+      this.publishDocuments(signedDoc);
+      this.setState({ signedDoc });
     } catch (e) {
       error(e);
+    }
+  };
+
+  uploadPulishedDocuments = async () => {
+    const { signedDoc } = this.state;
+    const response = await Promise.all(
+      signedDoc.map(doc => {
+        const url = get(doc, "data.documentUrl");
+        const splitUrl = decodeURIComponent(url)
+          .split("#")[0]
+          .split("/");
+        return updateDocument(doc, splitUrl[splitUrl.length - 1]);
+      })
+    );
+    this.setState({
+      signedDoc,
+      creatingDocument: false,
+      batchError: ""
+    });
+    if (response.find(val => !val)) {
+      this.setState({
+        batchError: "Documents issued but failed to upload"
+      });
     }
   };
 
