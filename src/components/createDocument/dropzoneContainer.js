@@ -12,13 +12,17 @@ import HashColor from "../UI/HashColor";
 import PdfDropzone from "./pdfDropzone";
 import { BlueButton, CustomButton } from "../UI/Button";
 import Input from "../UI/Input";
-import { createBaseDocument, isValidAddress, uploadFile } from "../utils";
+import { createBaseDocument, isValidAddress } from "../utils";
 import DocumentList from "./documentList";
 import Dropdown from "../UI/Dropdown";
 import { getLogger } from "../../logger";
 import STORE_ADDR from "./store";
+import {
+  getDocumentQueueNumber,
+  updateDocument
+} from "../../services/documentStore";
+import { SHARE_LINK_API_URL } from "../../config";
 
-const uuidv4 = require("uuid/v4");
 const JSZip = require("jszip");
 
 const { trace, error } = getLogger("services:dropzoneContainer");
@@ -45,9 +49,17 @@ class DropzoneContainer extends Component {
       documents: [],
       editableDoc: 0,
       creatingDocument: false,
-      signedDoc: [],
-      accessToken: ""
+      signedDoc: []
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      !this.props.issuingDocument &&
+      prevProps.issuedTx !== this.props.issuedTx
+    ) {
+      this.uploadPulishedDocuments();
+    }
   }
 
   handleFileError = () => this.setState({ fileError: true });
@@ -74,9 +86,9 @@ class DropzoneContainer extends Component {
 
   onEditTitle = id => this.setState({ editableDoc: id });
 
-  onBatchClick = () => {
+  onBatchClick = async () => {
     try {
-      const { documents, issuerName, documentStore, accessToken } = this.state;
+      const { documents, issuerName, documentStore } = this.state;
       const noAttachments = documents.find(doc => doc.attachments.length === 0);
       if (
         !issuerName ||
@@ -89,38 +101,48 @@ class DropzoneContainer extends Component {
       }
       this.setState({ creatingDocument: true, formError: false });
 
-      const unSignedData = documents.map(doc => {
-        const baseDoc = this.generateBaseDoc(doc.title);
+      const tempData = await Promise.all(
+        documents.map(() => getDocumentQueueNumber())
+      );
+
+      const unSignedData = documents.map((doc, idx) => {
+        const baseDoc = this.generateBaseDoc(doc.title, tempData[idx]);
         baseDoc.attachments = doc.attachments;
         return baseDoc;
       });
-      const signedDoc = this.issueDocuments(unSignedData);
 
-      Promise.all(signedDoc.map(doc => uploadFile(doc, accessToken))).then(
-        res => {
-          res.forEach((val, idx) => {
-            if (!val) signedDoc.splice(idx, 1);
-          });
-          if (signedDoc.length > 0) {
-            this.publishDocuments(signedDoc);
-            this.setState({
-              signedDoc,
-              creatingDocument: false,
-              batchError: ""
-            });
-            return;
-          }
-          this.setState({
-            batchError: "Please check your dropbox access token or settings"
-          });
-        }
-      );
+      const signedDoc = this.handleIssueDocuments(unSignedData);
+      this.publishDocuments(signedDoc);
+      this.setState({ signedDoc });
     } catch (e) {
       error(e);
     }
   };
 
-  generateBaseDoc = title => {
+  uploadPulishedDocuments = async () => {
+    const { signedDoc } = this.state;
+    const response = await Promise.all(
+      signedDoc.map(doc => {
+        const url = get(doc, "data.documentUrl");
+        const splitUrl = decodeURIComponent(url)
+          .split("#")[0]
+          .split("/");
+        return updateDocument(doc, splitUrl[splitUrl.length - 1]);
+      })
+    );
+    this.setState({
+      signedDoc,
+      creatingDocument: false,
+      batchError: ""
+    });
+    if (response.find(val => !val)) {
+      this.setState({
+        batchError: "Documents issued but failed to upload"
+      });
+    }
+  };
+
+  generateBaseDoc = (title, tempData) => {
     const { issuerName, documentStore } = this.state;
     const baseDoc = createBaseDocument();
     const metaObj = {
@@ -130,11 +152,16 @@ class DropzoneContainer extends Component {
     };
     baseDoc.issuers.push(metaObj);
     baseDoc.name = title;
-    baseDoc.documentUrl = `/${uuidv4()}/${title}.tt`;
+    const url = encodeURIComponent(
+      JSON.stringify(
+        `{"uri": ${SHARE_LINK_API_URL}/get/${tempData.queueNumber}#${tempData.key}}`
+      )
+    );
+    baseDoc.documentUrl = `tradetrust://${url}`;
     return baseDoc;
   };
 
-  issueDocuments = rawJson => {
+  handleIssueDocuments = rawJson => {
     try {
       return issueDocuments(rawJson);
     } catch (e) {
@@ -239,7 +266,6 @@ class DropzoneContainer extends Component {
       formError,
       activeDoc,
       editableDoc,
-      accessToken,
       batchError
     } = this.state;
     const { issuedTx, networkId, issuingError } = this.props;
@@ -276,22 +302,6 @@ class DropzoneContainer extends Component {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="fl w-90 mr4 ml4 mb4">
-            <span className="silver fw6">Dropbox Token</span>
-            <Input
-              id="store"
-              className="fr ba b--light-blue mt2"
-              name="accessToken"
-              variant="rounded"
-              type="text"
-              borderColor="#96ccff"
-              placeholder="Enter access token"
-              value={accessToken}
-              onChange={this.onInputFieldChange}
-              size={50}
-              required
-            />
           </div>
           <div className="mb4">
             <div className="mb4 mr5 ml4 gray fw6 f4">
