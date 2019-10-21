@@ -153,7 +153,9 @@ class DropzoneContainer extends Component {
     baseDoc.issuers.push(metaObj);
     baseDoc.name = title;
     const url = encodeURIComponent(
-      `{"uri": ${SHARE_LINK_API_URL}/get/${tempData.queueNumber}#${tempData.key}}`
+      JSON.stringify({
+        uri: `${SHARE_LINK_API_URL}/get/${tempData.queueNumber}#${tempData.key}`
+      })
     );
     baseDoc.documentUrl = `tradetrust://${url}`;
     return baseDoc;
