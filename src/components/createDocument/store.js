@@ -10,6 +10,10 @@ const STORE_ADDR = [
   {
     label: "IMDA Issuer - 1",
     value: "0xdB7C8918C94a558F06A1BC83A8424B779a788A0D"
+  },
+  {
+    label: "IMDA Issuer - 2",
+    value: "0x95A017bAFF3383A45C88F2beEd6C77AdD927217e"
   }
 ];
 
