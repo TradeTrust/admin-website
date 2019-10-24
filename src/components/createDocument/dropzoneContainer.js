@@ -67,7 +67,11 @@ class DropzoneContainer extends Component {
   createDocument = () => {
     const documents = JSON.parse(JSON.stringify(this.state.documents));
     const id = new Date().getTime();
-    documents.push({ id, title: "Untitled", attachments: [] });
+    documents.push({
+      id,
+      title: `Untitled-${documents.length + 1}`,
+      attachments: []
+    });
     this.setState({ documents, activeDoc: id });
   };
 
