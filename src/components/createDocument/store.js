@@ -30,7 +30,7 @@ const STORE_ADDR = [
   {
     label: "Nparks 2",
     value: "0x146697772f78332299d40eCE3Bf8c2f88a9338BD"
-  },
+  }
 ];
 
 export default STORE_ADDR;
