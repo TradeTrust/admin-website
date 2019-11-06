@@ -22,7 +22,15 @@ const STORE_ADDR = [
   {
     label: "IMDA Issuer - 4",
     value: "0xFD34Ea70b575B2dC3A1F0EA9F0579b5aDB20feaa"
-  }
+  },
+  {
+    label: "NParks 1",
+    value: "0x149Af36C327D362a445C44ea591a06121C76c3F6"
+  },
+  {
+    label: "Nparks 2",
+    value: "0x146697772f78332299d40eCE3Bf8c2f88a9338BD"
+  },
 ];
 
 export default STORE_ADDR;
