@@ -150,7 +150,7 @@ class DropzoneContainer extends Component {
     const metaObj = {
       name: issuerName,
       documentStore,
-      identityProof: { type: "DNS-TXT", location: "stanchart.tradetrust.io" }
+      identityProof: { type: "DNS-TXT", location: "nparks.tradetrust.io" }
     };
     baseDoc.issuers.push(metaObj);
     baseDoc.name = title;
