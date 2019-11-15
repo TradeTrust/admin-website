@@ -53,15 +53,6 @@ class DropzoneContainer extends Component {
     };
   }
 
-  componentDidUpdate(prevProps) {
-    if (
-      !this.props.issuingDocument &&
-      prevProps.issuedTx !== this.props.issuedTx
-    ) {
-      this.uploadPulishedDocuments();
-    }
-  }
-
   handleFileError = () => this.setState({ fileError: true });
 
   createDocument = () => {
@@ -116,12 +107,13 @@ class DropzoneContainer extends Component {
       const signedDoc = this.handleIssueDocuments(unSignedData);
       this.publishDocuments(signedDoc);
       this.setState({ signedDoc });
+      await this.uploadPublishedDocuments();
     } catch (e) {
       error(e);
     }
   };
 
-  uploadPulishedDocuments = async () => {
+  uploadPublishedDocuments = async () => {
     const { signedDoc } = this.state;
     const response = await Promise.all(
       signedDoc.map(doc => {
