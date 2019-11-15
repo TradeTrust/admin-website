@@ -101,12 +101,14 @@ class DropzoneContainer extends Component {
       }
       this.setState({ creatingDocument: true, formError: false });
 
-      const tempData = await Promise.all(
+      const urlReservations = await Promise.all(
         documents.map(() => getDocumentQueueNumber())
       );
 
+      trace(urlReservations);
+
       const unSignedData = documents.map((doc, idx) => {
-        const baseDoc = this.generateBaseDoc(doc.title, tempData[idx]);
+        const baseDoc = this.generateBaseDoc(doc.title, urlReservations[idx]);
         baseDoc.attachments = doc.attachments;
         return baseDoc;
       });
@@ -142,7 +144,7 @@ class DropzoneContainer extends Component {
     }
   };
 
-  generateBaseDoc = (title, tempData) => {
+  generateBaseDoc = (title, { id: documentId, key: decryptionKey }) => {
     const { issuerName, documentStore } = this.state;
     const baseDoc = createBaseDocument();
     const metaObj = {
@@ -154,7 +156,7 @@ class DropzoneContainer extends Component {
     baseDoc.name = title;
     const url = encodeURIComponent(
       JSON.stringify({
-        uri: `${SHARE_LINK_API_URL}/get/${tempData.queueNumber}#${tempData.key}`
+        uri: `${SHARE_LINK_API_URL}/${documentId}#${decryptionKey}`
       })
     );
     baseDoc.documentUrl = `tradetrust://${url}`;
