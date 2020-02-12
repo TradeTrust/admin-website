@@ -8,6 +8,10 @@ const STORE_ADDR = [
     value: "0x8c269AA86336212A93E474148e40cF33A09CB1C0"
   },
   {
+    label: "Serena Issuer",
+    value: "0xc1a6D6ad9C1C4fAa359dc0C11f9Fae76fC7B04e6"
+  },
+  {
     label: "IMDA Issuer - 1",
     value: "0xdB7C8918C94a558F06A1BC83A8424B779a788A0D"
   },
