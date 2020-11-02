@@ -30,10 +30,6 @@ export const types = {
   IS_LOADING: "IS_LOADING",
   IS_NOT_LOADING: "IS_NOT_LOADING"
 
-  // polling_started
-  // add to poll : should take a tx hash and a callback action
-  // remove from poll
-  // polling_stopped
 };
 
 // Reducers
